@@ -588,32 +588,32 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-800 font-sans antialiased pb-16 selection:bg-slate-900 selection:text-white">
+    <div className="min-h-screen bg-[#f7f9fb] text-[#191c1e] font-sans antialiased pb-16 selection:bg-[#000000] selection:text-white">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-100 backdrop-blur-md px-6 py-4 shadow-xs">
+      <header className="sticky top-0 z-40 bg-white/95 border-b border-[#e2e8f0] backdrop-blur-md px-6 py-4 shadow-xs">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-slate-900 text-white rounded-xl shadow-sm flex items-center justify-center">
+            <div className="p-2.5 bg-[#000000] text-white rounded-[4px] shadow-sm flex items-center justify-center">
               <Link2 className="w-5.5 h-5.5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-slate-900 font-display">UTM Campaign Builder</h1>
-              <p className="text-xs text-slate-500">Construct, validate, shorten, and archive enterprise campaign URLs</p>
+              <h1 className="text-xl font-bold tracking-tight text-[#191c1e] font-display">UTM Campaign Builder</h1>
+              <p className="text-xs text-[#64748B] font-sans">Construct, validate, shorten, and archive enterprise campaign URLs</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {/* Auth Status & Sync */}
             {isAuthLoading ? (
-              <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 rounded-lg border border-slate-100">
+              <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 rounded-[4px] border border-slate-100">
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
-                <span className="text-[11px] text-slate-400 font-medium">Checking sync...</span>
+                <span className="text-[11px] text-slate-400 font-medium font-sans">Checking sync...</span>
               </div>
             ) : currentUser ? (
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100" title="Syncing to Google Cloud Firestore database">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-[4px] border border-emerald-100 font-sans" title="Syncing to Google Cloud Firestore database">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-bold tracking-wider uppercase">Cloud</span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase">Cloud</span>
                   {currentUser.photoURL ? (
                     <img
                       src={currentUser.photoURL}
@@ -632,7 +632,7 @@ export default function App() {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-1 px-2.5 py-2 bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 text-slate-500 hover:text-red-600 rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                  className="flex items-center gap-1 px-2.5 py-2 bg-white hover:bg-red-50 border border-[#e2e8f0] text-slate-500 hover:text-red-600 rounded-[4px] text-xs font-semibold shadow-xs transition-colors cursor-pointer font-sans"
                   title="Sign Out from Google Campaign account"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -641,12 +641,12 @@ export default function App() {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 text-slate-500 rounded-lg border border-slate-100" title="Your campaigns are only saved on this device (offline)">
-                  <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400">Guest Mode</span>
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 text-slate-500 rounded-[4px] border border-slate-100 font-sans" title="Your campaigns are only saved on this device (offline)">
+                  <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400">Guest Mode</span>
                 </div>
                 <button
                   onClick={handleLogin}
-                  className="flex items-center gap-1.5 px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-[#191c1e] hover:bg-black text-white rounded-[4px] text-xs font-bold shadow-xs transition-colors cursor-pointer font-sans"
                   title="Connect with Google to save templates, presets, and history logs securely"
                 >
                   <LogIn className="w-3.5 h-3.5 text-emerald-400" />
@@ -657,7 +657,7 @@ export default function App() {
 
             <button
               onClick={() => setIsSettingsOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 border border-[#e2e8f0] text-slate-700 rounded-[4px] text-xs font-semibold shadow-xs transition-colors cursor-pointer font-sans"
               title="Configure Bitly / Rebrandly / TinyURL credentials"
             >
               <Settings className="w-3.5 h-3.5" />
@@ -665,7 +665,7 @@ export default function App() {
             </button>
             <button
               onClick={handleResetForm}
-              className="p-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-400 hover:text-slate-700 rounded-lg shadow-xs transition-colors cursor-pointer"
+              className="p-2 bg-white hover:bg-slate-50 border border-[#e2e8f0] text-slate-400 hover:text-slate-700 rounded-[4px] shadow-xs transition-colors cursor-pointer"
               title="Reset form fields"
             >
               <RotateCcw className="w-4 h-4" />
@@ -675,15 +675,15 @@ export default function App() {
       </header>
 
       {/* Tab Navigation Bar */}
-      <div className="bg-white border-b border-slate-200 sticky top-[73px] z-30 shadow-xs">
+      <div className="bg-white border-b border-[#e2e8f0] sticky top-[73px] z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-8 overflow-x-auto whitespace-nowrap">
             <button
               onClick={() => setActiveTab("creator")}
-              className={`py-4 px-1 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+              className={`py-4 px-1 text-sm font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer font-sans ${
                 activeTab === "creator"
-                  ? "border-slate-900 text-slate-900"
-                  : "border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-200"
+                  ? "border-[#000000] text-[#191c1e]"
+                  : "border-transparent text-[#64748B] hover:text-[#191c1e] hover:border-slate-200"
               }`}
             >
               <Sparkles className="w-4 h-4" />
@@ -691,10 +691,10 @@ export default function App() {
             </button>
             <button
               onClick={() => setActiveTab("batch")}
-              className={`py-4 px-1 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+              className={`py-4 px-1 text-sm font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer font-sans ${
                 activeTab === "batch"
-                  ? "border-slate-900 text-slate-900"
-                  : "border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-200"
+                  ? "border-[#000000] text-[#191c1e]"
+                  : "border-transparent text-[#64748B] hover:text-[#191c1e] hover:border-slate-200"
               }`}
             >
               <Layers className="w-4 h-4" />
@@ -702,10 +702,10 @@ export default function App() {
             </button>
             <button
               onClick={() => setActiveTab("templates")}
-              className={`py-4 px-1 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+              className={`py-4 px-1 text-sm font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer font-sans ${
                 activeTab === "templates"
-                  ? "border-slate-900 text-slate-900"
-                  : "border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-200"
+                  ? "border-[#000000] text-[#191c1e]"
+                  : "border-transparent text-[#64748B] hover:text-[#191c1e] hover:border-slate-200"
               }`}
             >
               <FileText className="w-4 h-4" />
@@ -718,10 +718,10 @@ export default function App() {
             </button>
             <button
               onClick={() => setActiveTab("history")}
-              className={`py-4 px-1 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+              className={`py-4 px-1 text-sm font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer font-sans ${
                 activeTab === "history"
-                  ? "border-slate-900 text-slate-900"
-                  : "border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-200"
+                  ? "border-[#000000] text-[#191c1e]"
+                  : "border-transparent text-[#64748B] hover:text-[#191c1e] hover:border-slate-200"
               }`}
             >
               <Globe className="w-4 h-4" />
@@ -741,7 +741,7 @@ export default function App() {
         
         {/* Dynamic Status Toast Indicator */}
         {notification && (
-          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-slate-900 text-white text-xs font-medium rounded-xl shadow-lg border border-slate-800 animate-slide-up">
+          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-[#191c1e] text-white text-xs font-bold rounded-[4px] shadow-lg border border-[#e2e8f0] animate-slide-up font-sans">
             <BookmarkCheck className="w-4 h-4 text-emerald-400" />
             <span>{notification}</span>
           </div>
@@ -755,18 +755,18 @@ export default function App() {
             <div className="lg:col-span-2 space-y-6">
               
               {/* Primary Form */}
-              <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-xs space-y-6">
+              <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-6 shadow-xs space-y-6">
                 <div className="border-b border-slate-100 pb-4">
-                  <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 font-display">
+                  <h2 className="text-base font-bold text-[#191c1e] flex items-center gap-2 font-display">
                     <Globe className="w-4.5 h-4.5 text-slate-500" />
                     Destination URL & standard UTMs
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Specify destination and associate basic tracking tags</p>
+                  <p className="text-xs text-[#64748B] mt-0.5 font-sans">Specify destination and associate basic tracking tags</p>
                 </div>
 
                 {/* Website Destination Input */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider text-[10px]">
+                  <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px] font-sans">
                     Website URL <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -779,7 +779,7 @@ export default function App() {
                       required
                       value={baseUrl}
                       onChange={(e) => setBaseUrl(e.target.value)}
-                      className="w-full text-xs pl-10 pr-3 py-3 border border-slate-200 bg-slate-50/50 hover:bg-slate-50/30 focus:bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono"
+                      className="w-full text-xs pl-10 pr-3 py-3 border border-[#e2e8f0] bg-white focus:bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all font-mono"
                     />
                   </div>
                   {/* Real-time Validation Component */}
@@ -789,12 +789,12 @@ export default function App() {
                 {/* Core Standard UTM Parameters Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
                   {/* Campaign Source */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 font-sans">
                     <div className="flex justify-between">
-                      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider text-[10px]">
+                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
                         Source <span className="text-red-500">*</span>
                       </label>
-                      <span className="text-[9px] text-slate-400 font-mono">utm_source</span>
+                      <span className="text-[9px] text-[#64748B] font-mono">utm_source</span>
                     </div>
                     <input
                       type="text"
@@ -802,17 +802,17 @@ export default function App() {
                       required
                       value={utmSource}
                       onChange={(e) => setUtmSource(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-slate-200/80 bg-slate-50/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800 focus:bg-white"
+                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
                     />
                   </div>
 
                   {/* Campaign Medium */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 font-sans">
                     <div className="flex justify-between">
-                      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider text-[10px]">
+                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
                         Medium <span className="text-red-500">*</span>
                       </label>
-                      <span className="text-[9px] text-slate-400 font-mono">utm_medium</span>
+                      <span className="text-[9px] text-[#64748B] font-mono">utm_medium</span>
                     </div>
                     <input
                       type="text"
@@ -820,17 +820,17 @@ export default function App() {
                       required
                       value={utmMedium}
                       onChange={(e) => setUtmMedium(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-slate-200/80 bg-slate-50/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800 focus:bg-white"
+                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
                     />
                   </div>
 
                   {/* Campaign Name */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 font-sans">
                     <div className="flex justify-between">
-                      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider text-[10px]">
+                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
                         Campaign Name <span className="text-red-500">*</span>
                       </label>
-                      <span className="text-[9px] text-slate-400 font-mono">utm_campaign</span>
+                      <span className="text-[9px] text-[#64748B] font-mono">utm_campaign</span>
                     </div>
                     <input
                       type="text"
@@ -838,73 +838,73 @@ export default function App() {
                       required
                       value={utmCampaign}
                       onChange={(e) => setUtmCampaign(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-slate-200/80 bg-slate-50/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800 focus:bg-white"
+                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
                     />
                   </div>
 
                   {/* Campaign Term */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 font-sans">
                     <div className="flex justify-between">
-                      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider text-[10px]">
+                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
                         Campaign Term
                       </label>
-                      <span className="text-[9px] text-slate-400 font-mono">utm_term</span>
+                      <span className="text-[9px] text-[#64748B] font-mono">utm_term</span>
                     </div>
                     <input
                       type="text"
                       placeholder="e.g. running+shoes"
                       value={utmTerm}
                       onChange={(e) => setUtmTerm(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-slate-200/80 bg-slate-50/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800 focus:bg-white"
+                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
                     />
                   </div>
 
                   {/* Campaign Content */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 font-sans">
                     <div className="flex justify-between">
-                      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider text-[10px]">
+                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
                         Campaign Content
                       </label>
-                      <span className="text-[9px] text-slate-400 font-mono">utm_content</span>
+                      <span className="text-[9px] text-[#64748B] font-mono">utm_content</span>
                     </div>
                     <input
                       type="text"
                       placeholder="e.g. banner_cta_red"
                       value={utmContent}
                       onChange={(e) => setUtmContent(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-slate-200/80 bg-slate-50/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800 focus:bg-white"
+                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
                     />
                   </div>
 
                   {/* Campaign ID */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 font-sans">
                     <div className="flex justify-between">
-                      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider text-[10px]">
+                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
                         Campaign ID
                       </label>
-                      <span className="text-[9px] text-slate-400 font-mono">utm_id</span>
+                      <span className="text-[9px] text-[#64748B] font-mono">utm_id</span>
                     </div>
                     <input
                       type="text"
                       placeholder="e.g. sales_id_77"
                       value={utmId}
                       onChange={(e) => setUtmId(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-slate-200/80 bg-slate-50/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800 focus:bg-white"
+                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
                     />
                   </div>
                 </div>
 
                 {/* Custom Extra Parameters Accordion / Fields */}
-                <div className="border-t border-slate-100 pt-5 space-y-3">
+                <div className="border-t border-slate-100 pt-5 space-y-3 font-sans">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-wider text-[10px]">Custom Parameters</h4>
-                      <p className="text-[10px] text-slate-400">Append custom non-standard tags (e.g., gclid, partner_id, fbclid)</p>
+                      <h4 className="text-xs font-bold text-[#191c1e] uppercase tracking-widest text-[10px]">Custom Parameters</h4>
+                      <p className="text-[10px] text-[#64748B]">Append custom non-standard tags (e.g., gclid, partner_id, fbclid)</p>
                     </div>
                     <button
                       type="button"
                       onClick={handleAddCustomParam}
-                      className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold bg-blue-50/50 hover:bg-blue-50 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-xs text-[#3B82F6] font-bold bg-blue-50/50 hover:bg-blue-50 px-2.5 py-1 rounded-[4px] transition-colors cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       Add Parameter
@@ -920,19 +920,19 @@ export default function App() {
                             placeholder="Key (e.g. gclid)"
                             value={param.key}
                             onChange={(e) => handleUpdateCustomParam(param.id, "key", e.target.value)}
-                            className="flex-1 text-xs px-3 py-2 border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800 font-mono"
+                            className="flex-1 text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-mono"
                           />
                           <input
                             type="text"
                             placeholder="Value (e.g. true)"
                             value={param.value}
                             onChange={(e) => handleUpdateCustomParam(param.id, "value", e.target.value)}
-                            className="flex-1 text-xs px-3 py-2 border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800 font-mono"
+                            className="flex-1 text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-mono"
                           />
                           <button
                             type="button"
                             onClick={() => handleRemoveCustomParam(param.id)}
-                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-slate-50 rounded-[4px] transition-colors cursor-pointer"
                             title="Remove Parameter"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -941,7 +941,7 @@ export default function App() {
                       ))}
                     </div>
                   ) : (
-                    <div className="py-5 text-center text-[11px] text-slate-400 border border-dashed border-slate-100 rounded-xl bg-slate-50/30">
+                    <div className="py-5 text-center text-[11px] text-[#64748B] border border-dashed border-[#e2e8f0] rounded-[4px] bg-slate-50/30">
                       No custom parameters configured yet.
                     </div>
                   )}
@@ -952,22 +952,22 @@ export default function App() {
             {/* Live URL Output & Shortening Panel (Takes 1/3 space) */}
             <div className="lg:col-span-1 space-y-6">
               {fullAssembledUrl ? (
-                <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-xs space-y-6 sticky top-[160px]">
+                <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-6 shadow-xs space-y-6 sticky top-[160px]">
                   <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2 font-display">
+                    <h3 className="text-base font-bold text-[#191c1e] flex items-center gap-2 font-display">
                       <Sparkles className="w-4.5 h-4.5 text-amber-500 fill-amber-50" />
                       Campaign Destination
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">Your tracking link is compiled dynamically below</p>
+                    <p className="text-xs text-[#64748B] mt-0.5 font-sans">Your tracking link is compiled dynamically below</p>
                   </div>
 
                   {/* Display Full URL */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-[11px] text-slate-500 font-semibold">
+                  <div className="space-y-2 font-sans">
+                    <div className="flex items-center justify-between text-[11px] text-[#64748B] font-bold">
                       <span>CONSTRUCTED UTM URL</span>
                       <button
                         onClick={handleCopyFullUrl}
-                        className="text-blue-600 hover:text-blue-700 flex items-center gap-1 font-semibold hover:underline cursor-pointer"
+                        className="text-[#3B82F6] hover:text-[#3B82F6]/80 flex items-center gap-1 font-bold hover:underline cursor-pointer"
                       >
                         {copiedLink === "full" ? (
                           <>
@@ -982,14 +982,14 @@ export default function App() {
                         )}
                       </button>
                     </div>
-                    <div className="p-3.5 bg-slate-50 border border-slate-100 rounded-xl text-slate-700 text-xs font-mono break-all leading-relaxed max-h-32 overflow-y-auto shadow-inner">
+                    <div className="p-3.5 bg-slate-50 border border-[#e2e8f0] rounded-[4px] text-slate-700 text-xs font-mono break-all leading-relaxed max-h-32 overflow-y-auto shadow-inner">
                       {fullAssembledUrl}
                     </div>
                   </div>
 
                   {/* Shorten Options Grid */}
-                  <div className="space-y-3 pt-2">
-                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider text-[10px]">
+                  <div className="space-y-3 pt-2 font-sans">
+                    <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
                       Select Shortener Service
                     </label>
                     
@@ -997,78 +997,78 @@ export default function App() {
                       {/* None */}
                       <div
                         onClick={() => setShortenerService("none")}
-                        className={`p-2.5 border rounded-xl cursor-pointer text-center flex flex-col items-center justify-center transition-all ${
+                        className={`p-2.5 border rounded-[4px] cursor-pointer text-center flex flex-col items-center justify-center transition-all ${
                           shortenerService === "none"
-                            ? "border-slate-800 bg-slate-900 text-white font-medium"
-                            : "border-slate-100 bg-white hover:border-slate-200 text-slate-600"
+                            ? "border-[#000000] bg-[#191c1e] text-white font-bold"
+                            : "border-[#e2e8f0] bg-white hover:border-[#3B82F6] text-slate-600"
                         }`}
                       >
-                        <div className="text-xs font-semibold">None</div>
-                        <span className="text-[9px] text-slate-400">Direct URL</span>
+                        <div className="text-xs font-bold">None</div>
+                        <span className="text-[9px] text-[#64748B]">Direct URL</span>
                       </div>
 
                       {/* Bitly */}
                       <div
                         onClick={() => setShortenerService("bitly")}
-                        className={`p-2.5 border rounded-xl cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
+                        className={`p-2.5 border rounded-[4px] cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
                           shortenerService === "bitly"
-                            ? "border-orange-500 bg-orange-50 text-orange-950 font-semibold"
-                            : "border-slate-100 bg-white hover:border-slate-200 text-slate-600"
+                            ? "border-orange-500 bg-orange-50 text-orange-950 font-bold"
+                            : "border-[#e2e8f0] bg-white hover:border-[#3B82F6] text-slate-600"
                         }`}
                       >
-                        <div className="text-xs font-semibold">Bitly</div>
-                        <span className="text-[9px] text-slate-400">bit.ly</span>
+                        <div className="text-xs font-bold">Bitly</div>
+                        <span className="text-[9px] text-[#64748B]">bit.ly</span>
                       </div>
 
                       {/* Rebrandly */}
                       <div
                         onClick={() => setShortenerService("rebrandly")}
-                        className={`p-2.5 border rounded-xl cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
+                        className={`p-2.5 border rounded-[4px] cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
                           shortenerService === "rebrandly"
-                            ? "border-blue-500 bg-blue-50 text-blue-950 font-semibold"
-                            : "border-slate-100 bg-white hover:border-slate-200 text-slate-600"
+                            ? "border-[#3B82F6] bg-blue-50 text-blue-950 font-bold"
+                            : "border-[#e2e8f0] bg-white hover:border-[#3B82F6] text-slate-600"
                         }`}
                       >
-                        <div className="text-xs font-semibold">Rebrandly</div>
-                        <span className="text-[9px] text-slate-400">rebrand.ly</span>
+                        <div className="text-xs font-bold">Rebrandly</div>
+                        <span className="text-[9px] text-[#64748B]">rebrand.ly</span>
                       </div>
 
                       {/* DUB.co */}
                       <div
                         onClick={() => setShortenerService("dub")}
-                        className={`p-2.5 border rounded-xl cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
+                        className={`p-2.5 border rounded-[4px] cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
                           shortenerService === "dub"
-                            ? "border-indigo-500 bg-indigo-50 text-indigo-950 font-semibold"
-                            : "border-slate-100 bg-white hover:border-slate-200 text-slate-600"
+                            ? "border-indigo-500 bg-indigo-50 text-indigo-950 font-bold"
+                            : "border-[#e2e8f0] bg-white hover:border-[#3B82F6] text-slate-600"
                         }`}
                       >
-                        <div className="text-xs font-semibold">DUB.co</div>
-                        <span className="text-[9px] text-slate-400">dub.sh</span>
+                        <div className="text-xs font-bold">DUB.co</div>
+                        <span className="text-[9px] text-[#64748B]">dub.sh</span>
                       </div>
 
                       {/* TinyURL */}
                       <div
                         onClick={() => setShortenerService("tinyurl")}
-                        className={`p-2.5 border rounded-xl cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
+                        className={`p-2.5 border rounded-[4px] cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
                           shortenerService === "tinyurl"
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-950 font-semibold"
-                            : "border-slate-100 bg-white hover:border-slate-200 text-slate-600"
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-950 font-bold"
+                            : "border-[#e2e8f0] bg-white hover:border-[#3B82F6] text-slate-600"
                         }`}
                       >
-                        <div className="text-xs font-semibold">TinyURL</div>
-                        <span className="text-[9px] text-slate-400">Free / API</span>
+                        <div className="text-xs font-bold">TinyURL</div>
+                        <span className="text-[9px] text-[#64748B]">Free / API</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Shortener Submission Trigger Panel */}
                   {shortenerService !== "none" && (
-                    <div className="p-4 border border-slate-100 bg-slate-50/50 rounded-xl flex flex-col gap-3">
+                    <div className="p-4 border border-[#e2e8f0] bg-slate-50/50 rounded-[4px] flex flex-col gap-3 font-sans">
                       <div className="space-y-1">
-                        <div className="text-xs font-semibold text-slate-800">
+                        <div className="text-xs font-bold text-[#191c1e]">
                           Shorten with {shortenerService.toUpperCase()}
                         </div>
-                        <p className="text-[10px] text-slate-400">
+                        <p className="text-[10px] text-[#64748B]">
                           {shortenerService === "tinyurl" && !settings.tinyurlToken
                             ? "Will execute using the free anonymous TinyURL API."
                             : `Using credentials configured in settings.`}
@@ -1079,7 +1079,7 @@ export default function App() {
                         type="button"
                         onClick={handleShortenLink}
                         disabled={isShortening}
-                        className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-slate-900 text-white hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 rounded-xl text-xs font-semibold shadow-xs transition-all cursor-pointer"
+                        className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#191c1e] text-white hover:bg-black disabled:bg-slate-200 disabled:text-[#64748B] rounded-[4px] text-xs font-bold shadow-xs transition-all cursor-pointer"
                       >
                         {isShortening ? (
                           <>
@@ -1095,10 +1095,10 @@ export default function App() {
 
                   {/* Display Shortener API Errors */}
                   {shorteningError && (
-                    <div className="p-3.5 bg-red-50 border border-red-100 rounded-xl text-red-700 text-xs flex gap-2.5 items-start">
+                    <div className="p-3.5 bg-red-50 border border-red-100 rounded-[4px] text-red-700 text-xs flex gap-2.5 items-start font-sans">
                       <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-semibold text-red-800">API Error:</span> {shorteningError}
+                        <span className="font-bold text-red-800">API Error:</span> {shorteningError}
                         <div className="text-[10px] text-red-500 mt-1">
                           Check your API Token in the top right integrations menu.
                         </div>
@@ -1108,12 +1108,12 @@ export default function App() {
 
                   {/* Display Shortened Link */}
                   {shortenedUrl && (
-                    <div className="space-y-2 p-4 bg-emerald-50/40 border border-emerald-100/60 rounded-xl animate-fade-in">
-                      <div className="flex items-center justify-between text-[11px] text-emerald-800 font-semibold">
+                    <div className="space-y-2 p-4 bg-emerald-50/40 border border-emerald-100/60 rounded-[4px] animate-fade-in font-sans">
+                      <div className="flex items-center justify-between text-[11px] text-emerald-800 font-bold">
                         <span>SHORTENED LINK</span>
                         <button
                           onClick={handleCopyShortUrl}
-                          className="text-emerald-700 hover:text-emerald-900 flex items-center gap-1 font-semibold hover:underline cursor-pointer"
+                          className="text-emerald-700 hover:text-emerald-900 flex items-center gap-1 font-bold hover:underline cursor-pointer"
                         >
                           {copiedLink === "short" ? (
                             <>
@@ -1128,13 +1128,13 @@ export default function App() {
                           )}
                         </button>
                       </div>
-                      <div className="p-3 bg-white border border-emerald-100 rounded-lg text-emerald-950 font-mono text-xs font-bold flex justify-between items-center">
+                      <div className="p-3 bg-white border border-[#e2e8f0] rounded-[4px] text-[#191c1e] font-mono text-xs font-bold flex justify-between items-center">
                         <span className="truncate mr-2">{shortenedUrl}</span>
                         <a
                           href={shortenedUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition-all cursor-pointer"
+                          className="p-1 hover:bg-slate-100 rounded-[4px] text-slate-400 hover:text-slate-700 transition-all cursor-pointer"
                           title="Open Shortened Link"
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
@@ -1144,18 +1144,18 @@ export default function App() {
                   )}
 
                   {/* QR Code Generator Section */}
-                  <div className="border-t border-slate-100 pt-4 space-y-3">
+                  <div className="border-t border-slate-100 pt-4 space-y-3 font-sans">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <h4 className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest flex items-center gap-1.5 font-sans">
                         <QrCode className="w-3.5 h-3.5 text-slate-400" />
                         Campaign QR Code
                       </h4>
                       {shortenedUrl && (
-                        <div className="flex bg-slate-100 p-0.5 rounded-lg text-[10px]">
+                        <div className="flex bg-slate-100 p-0.5 rounded-[4px] text-[10px]">
                           <button
                             type="button"
                             onClick={() => setQrTarget("full")}
-                            className={`px-2 py-0.5 rounded-md font-semibold cursor-pointer transition-all ${
+                            className={`px-2 py-0.5 rounded-[4px] font-bold cursor-pointer transition-all ${
                               qrTarget === "full"
                                 ? "bg-white text-slate-800 shadow-xs"
                                 : "text-slate-500 hover:text-slate-800"
@@ -1166,7 +1166,7 @@ export default function App() {
                           <button
                             type="button"
                             onClick={() => setQrTarget("short")}
-                            className={`px-2 py-0.5 rounded-md font-semibold cursor-pointer transition-all ${
+                            className={`px-2 py-0.5 rounded-[4px] font-bold cursor-pointer transition-all ${
                               qrTarget === "short"
                                 ? "bg-white text-slate-800 shadow-xs"
                                 : "text-slate-500 hover:text-slate-800"
@@ -1178,9 +1178,9 @@ export default function App() {
                       )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-4 bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
+                    <div className="flex flex-col sm:flex-row items-center gap-4 bg-slate-50/50 p-3.5 rounded-[4px] border border-[#e2e8f0]">
                       {/* Canvas Container */}
-                      <div className="bg-white p-2 rounded-lg shadow-xs border border-slate-200/50 shrink-0 animate-fade-in">
+                      <div className="bg-white p-2 rounded-[4px] shadow-xs border border-[#e2e8f0] shrink-0 animate-fade-in">
                         <QRCodeCanvas
                           id="qr-code-canvas"
                           value={qrTarget === "short" && shortenedUrl ? shortenedUrl : fullAssembledUrl}
@@ -1194,7 +1194,7 @@ export default function App() {
 
                       <div className="space-y-2 flex-1 w-full text-center sm:text-left">
                         <div className="flex items-center justify-center sm:justify-start gap-1.5">
-                          <span className="text-[10px] text-slate-400 font-semibold">COLOR:</span>
+                          <span className="text-[10px] text-[#64748B] font-bold">COLOR:</span>
                           {[
                             { hex: "#0F172A", name: "Slate", bg: "bg-slate-900" },
                             { hex: "#2563EB", name: "Blue", bg: "bg-blue-600" },
@@ -1215,14 +1215,14 @@ export default function App() {
                           ))}
                         </div>
 
-                        <div className="text-[10px] text-slate-400 leading-relaxed font-mono truncate max-w-[180px] sm:max-w-[200px] mx-auto sm:mx-0">
-                          Target: <span className="text-slate-600 font-semibold">{qrTarget === "short" && shortenedUrl ? shortenedUrl : fullAssembledUrl}</span>
+                        <div className="text-[10px] text-[#64748B] leading-relaxed font-mono truncate max-w-[180px] sm:max-w-[200px] mx-auto sm:mx-0">
+                          Target: <span className="text-slate-600 font-bold">{qrTarget === "short" && shortenedUrl ? shortenedUrl : fullAssembledUrl}</span>
                         </div>
 
                         <button
                           type="button"
                           onClick={downloadQRCode}
-                          className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                          className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#3B82F6] hover:text-[#3B82F6]/80 rounded-[4px] text-xs font-bold transition-colors cursor-pointer"
                         >
                           <Download className="w-3.5 h-3.5" />
                           Download PNG
@@ -1232,11 +1232,11 @@ export default function App() {
                   </div>
 
                   {/* History Preservation Button */}
-                  <div className="border-t border-slate-100 pt-4 flex gap-2.5">
+                  <div className="border-t border-slate-100 pt-4 flex gap-2.5 font-sans">
                     <button
                       type="button"
                       onClick={handleSaveToHistoryLog}
-                      className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-900 text-white hover:bg-slate-800 rounded-xl text-xs font-semibold transition-colors shadow-xs cursor-pointer"
+                      className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-[#191c1e] text-white hover:bg-black rounded-[4px] text-xs font-bold transition-colors shadow-xs cursor-pointer"
                     >
                       <FileText className="w-3.5 h-3.5" />
                       Save to History Log
@@ -1244,10 +1244,10 @@ export default function App() {
                   </div>
                 </div>
               ) : (
-                <div className="bg-slate-100/30 border border-dashed border-slate-200 rounded-2xl py-12 px-6 text-center space-y-2 text-slate-400 sticky top-[160px]">
+                <div className="bg-slate-100/30 border border-dashed border-[#e2e8f0] rounded-[8px] py-12 px-6 text-center space-y-2 text-[#64748B] sticky top-[160px] font-sans">
                   <Globe className="w-8 h-8 mx-auto text-slate-200" />
-                  <h4 className="font-semibold text-xs text-slate-500">Live URL Constructor</h4>
-                  <p className="text-[10px] text-slate-400 max-w-sm mx-auto">Input your website URL and marketing parameters to compile tracking links and use shorteners here.</p>
+                  <h4 className="font-bold text-xs text-[#191c1e]">Live URL Constructor</h4>
+                  <p className="text-[10px] text-[#64748B] max-w-sm mx-auto">Input your website URL and marketing parameters to compile tracking links and use shorteners here.</p>
                 </div>
               )}
             </div>
@@ -1278,7 +1278,7 @@ export default function App() {
         {/* Tab 2: Saved Templates & Presets */}
         {activeTab === "templates" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-xs">
+            <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-6 shadow-xs">
               <TemplateManager
                 customTemplates={customTemplates}
                 onSelectTemplate={handleSelectTemplate}
@@ -1287,7 +1287,7 @@ export default function App() {
                 currentActiveId={currentTemplateId}
               />
             </div>
-            <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-xs">
+            <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-6 shadow-xs">
               <PresetSelector
                 presets={presets}
                 onSelectPreset={handleSelectPreset}
@@ -1301,7 +1301,7 @@ export default function App() {
 
         {/* Tab 3: Campaign History Log */}
         {activeTab === "history" && (
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-xs">
+          <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-6 shadow-xs">
             <HistoryLogTable
               logs={historyLogs}
               onDeleteLog={handleDeleteLog}

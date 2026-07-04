@@ -73,15 +73,15 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
   };
 
   return (
-    <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-xs space-y-4">
+    <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-6 shadow-xs space-y-4">
       {/* Header and exports */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5 font-display">
+          <h3 className="text-sm font-bold text-[#191c1e] flex items-center gap-1.5 font-display">
             <LinkIcon className="w-4 h-4 text-slate-500" />
             Campaign History Master Log
           </h3>
-          <p className="text-[11px] text-slate-400">Master ledger of generated marketing links and tracking logs</p>
+          <p className="text-[11px] text-[#64748B] font-sans">Master ledger of generated marketing links and tracking logs</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -89,7 +89,7 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
             <>
               <button
                 onClick={exportToCSV}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-medium rounded-lg border border-slate-200/80 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-[4px] border border-[#e2e8f0] transition-colors cursor-pointer font-sans"
                 title="Export filtered records to Excel/CSV"
               >
                 <Download className="w-3.5 h-3.5" />
@@ -97,7 +97,7 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
               </button>
               <button
                 onClick={exportToJSON}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-medium rounded-lg border border-slate-200/80 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-[4px] border border-[#e2e8f0] transition-colors cursor-pointer font-sans"
                 title="Export filtered records to raw JSON"
               >
                 <FileJson className="w-3.5 h-3.5" />
@@ -105,7 +105,7 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
               </button>
               <button
                 onClick={onClearAll}
-                className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-50 text-red-600 text-xs font-medium rounded-lg transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-50 text-red-600 text-xs font-semibold rounded-[4px] transition-colors cursor-pointer font-sans"
                 title="Delete all records in local history"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -118,7 +118,7 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
 
       {/* Search Input */}
       <div className="relative">
-        <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+        <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#64748B]">
           <Search className="w-4 h-4" />
         </span>
         <input
@@ -126,15 +126,15 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
           placeholder="Filter campaigns by name, destination, or shortened link..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full text-xs pl-9 pr-3 py-2 border border-slate-200 bg-slate-50/50 rounded-xl focus:outline-none focus:ring-1 focus:ring-slate-400 focus:bg-white transition-all"
+          className="w-full text-xs pl-9 pr-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all font-sans"
         />
       </div>
 
       {/* History Table Container */}
-      <div className="overflow-x-auto border border-slate-100 rounded-xl">
+      <div className="overflow-x-auto border border-[#e2e8f0] rounded-[8px]">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-100 text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+            <tr className="bg-slate-50 border-b border-[#e2e8f0] text-[10px] text-[#64748B] font-bold uppercase tracking-widest font-sans">
               <th className="px-4 py-3">Campaign Details</th>
               <th className="px-4 py-3">Destination Base</th>
               <th className="px-4 py-3">Generated Connections</th>
@@ -147,10 +147,10 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
                 <tr key={log.id} className="hover:bg-slate-50/50 transition-colors">
                   {/* Campaign Name & Date */}
                   <td className="px-4 py-3.5 min-w-[150px]">
-                    <div className="font-semibold text-slate-900 flex items-center gap-1">
+                    <div className="font-bold text-slate-900 flex items-center gap-1 font-sans">
                       {log.campaignName || "Unnamed Campaign"}
                     </div>
-                    <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                    <div className="text-[10px] text-[#64748B] font-mono mt-0.5">
                       {new Date(log.createdAt).toLocaleDateString()} at{" "}
                       {new Date(log.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </div>
@@ -167,13 +167,13 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
                   <td className="px-4 py-3.5 min-w-[240px] space-y-1">
                     {/* Short link */}
                     {log.shortUrl && log.shortUrl !== log.fullUrl && (
-                      <div className="flex items-center justify-between gap-2 p-1.5 bg-emerald-50/60 rounded-lg border border-emerald-100/50">
-                        <span className="font-mono text-[11px] font-semibold text-emerald-700 truncate max-w-[170px]">
+                      <div className="flex items-center justify-between gap-2 p-1.5 bg-emerald-50/60 rounded-[4px] border border-emerald-100/50">
+                        <span className="font-mono text-[11px] font-bold text-emerald-700 truncate max-w-[170px]">
                           {log.shortUrl}
                         </span>
                         <button
                           onClick={() => handleCopy(log.shortUrl, log.id, "short")}
-                          className="p-1 hover:bg-emerald-100 rounded text-emerald-600 transition-colors flex items-center"
+                          className="p-1 hover:bg-emerald-100 rounded-[4px] text-emerald-600 transition-colors flex items-center cursor-pointer"
                           title="Copy shortened URL"
                         >
                           {copiedId === log.id && copyType === "short" ? (
@@ -186,13 +186,13 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
                     )}
 
                     {/* Full link */}
-                    <div className="flex items-center justify-between gap-2 p-1.5 bg-slate-50 rounded-lg border border-slate-200/50">
+                    <div className="flex items-center justify-between gap-2 p-1.5 bg-slate-50 rounded-[4px] border border-slate-200/50">
                       <span className="font-mono text-[10px] text-slate-600 truncate max-w-[170px]" title={log.fullUrl}>
                         {log.fullUrl}
                       </span>
                       <button
                         onClick={() => handleCopy(log.fullUrl, log.id, "full")}
-                        className="p-1 hover:bg-slate-200 rounded text-slate-500 transition-colors flex items-center"
+                        className="p-1 hover:bg-slate-200 rounded-[4px] text-slate-500 transition-colors flex items-center cursor-pointer"
                         title="Copy full UTM URL"
                       >
                         {copiedId === log.id && copyType === "full" ? (
@@ -208,7 +208,7 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
                   <td className="px-4 py-3.5 text-right">
                     <button
                       onClick={() => onDeleteLog(log.id)}
-                      className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-[4px] transition-colors cursor-pointer"
                       title="Remove from master log"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -218,11 +218,11 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
               ))
             ) : (
               <tr>
-                <td colSpan={4} className="py-8 text-center text-slate-400">
+                <td colSpan={4} className="py-8 text-center text-[#64748B]">
                   <div className="flex flex-col items-center justify-center gap-1.5">
                     <Sparkles className="w-6 h-6 text-slate-200" />
-                    <span className="font-medium text-xs">No campaign logs in this ledger</span>
-                    <span className="text-[10px] text-slate-300">Generate a URL and click "Save to History Log"</span>
+                    <span className="font-bold text-xs font-sans">No campaign logs in this ledger</span>
+                    <span className="text-[10px] text-[#64748B] font-sans">Generate a URL and click "Save to History Log"</span>
                   </div>
                 </td>
               </tr>

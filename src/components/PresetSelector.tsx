@@ -48,18 +48,18 @@ export default function PresetSelector({
       </div>
 
       {/* Save Current State Form */}
-      <form onSubmit={handleSave} className="flex gap-1.5">
+      <form onSubmit={handleSave} className="flex gap-2">
         <input
           type="text"
           placeholder="Save current setup as preset..."
           required
           value={newPresetName}
           onChange={(e) => setNewPresetName(e.target.value)}
-          className="flex-1 text-xs px-2.5 py-1.5 border border-slate-200/80 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-all"
+          className="flex-1 text-xs px-2.5 py-1.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all font-sans"
         />
         <button
           type="submit"
-          className="px-3 py-1.5 text-xs font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-lg shrink-0 transition-colors flex items-center gap-1"
+          className="px-3 py-1.5 text-xs font-semibold text-white bg-[#191c1e] hover:bg-black rounded-[4px] shrink-0 transition-colors flex items-center gap-1 cursor-pointer"
         >
           {isSavedSuccessfully ? (
             <>
@@ -74,7 +74,7 @@ export default function PresetSelector({
 
       {/* Search presets */}
       <div className="relative">
-        <span className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+        <span className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-[#64748B]">
           <Search className="w-3.5 h-3.5" />
         </span>
         <input
@@ -82,12 +82,12 @@ export default function PresetSelector({
           placeholder="Search saved presets..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full text-xs pl-8 pr-3 py-1.5 border border-slate-200/80 bg-slate-50/50 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-400 focus:bg-white transition-all"
+          className="w-full text-xs pl-8 pr-3 py-1.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all font-sans"
         />
       </div>
 
       {/* Presets List */}
-      <div className="space-y-1.5 max-h-[180px] overflow-y-auto pr-1">
+      <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
         {filteredPresets.length > 0 ? (
           filteredPresets.map((preset) => {
             const isActive = currentPresetId === preset.id;
@@ -95,17 +95,17 @@ export default function PresetSelector({
               <div
                 key={preset.id}
                 onClick={() => onSelectPreset(preset)}
-                className={`group flex items-center justify-between p-2.5 border rounded-lg cursor-pointer transition-all ${
+                className={`group flex items-center justify-between p-2.5 border rounded-[4px] cursor-pointer transition-all ${
                   isActive
-                    ? "border-slate-800 bg-slate-900 text-white"
-                    : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50 text-slate-700"
+                    ? "border-[#191c1e] bg-[#191c1e] text-white"
+                    : "border-[#e2e8f0] bg-white hover:border-[#3B82F6] hover:shadow-[0_8px_30px_rgba(59,130,246,0.08)] text-slate-700"
                 }`}
               >
                 <div className="min-w-0 flex-1 pr-2">
-                  <div className="font-medium text-xs truncate">{preset.name}</div>
+                  <div className="font-semibold text-xs truncate font-sans">{preset.name}</div>
                   <div
                     className={`text-[9px] truncate flex items-center gap-1 mt-0.5 ${
-                      isActive ? "text-slate-300" : "text-slate-400"
+                      isActive ? "text-slate-300" : "text-[#64748B]"
                     }`}
                   >
                     <Calendar className="w-2.5 h-2.5" />
@@ -121,10 +121,10 @@ export default function PresetSelector({
                 <div className="flex items-center gap-1.5">
                   {/* Load Badge/Status Indicator */}
                   <span
-                    className={`text-[9px] px-1.5 py-0.5 rounded ${
+                    className={`text-[9px] px-1.5 py-0.5 rounded-[4px] font-semibold ${
                       isActive
                         ? "bg-emerald-950 text-emerald-300 border border-emerald-800"
-                        : "bg-slate-50 text-slate-400 group-hover:bg-slate-100"
+                        : "bg-slate-50 text-[#64748B] group-hover:bg-slate-100"
                     }`}
                   >
                     {isActive ? "Active" : "Load"}
@@ -136,7 +136,7 @@ export default function PresetSelector({
                       e.stopPropagation();
                       onDeletePreset(preset.id);
                     }}
-                    className={`p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
+                    className={`p-1 rounded-[4px] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer ${
                       isActive
                         ? "text-slate-400 hover:text-red-400 hover:bg-slate-800"
                         : "text-slate-400 hover:text-red-600 hover:bg-red-50"
@@ -150,7 +150,7 @@ export default function PresetSelector({
             );
           })
         ) : (
-          <div className="py-6 text-center text-xs text-slate-400 border border-dashed border-slate-100 rounded-lg flex flex-col items-center justify-center gap-1.5">
+          <div className="py-6 text-center text-xs text-[#64748B] border border-dashed border-[#e2e8f0] rounded-[4px] flex flex-col items-center justify-center gap-1.5 bg-white">
             <ClipboardList className="w-5 h-5 text-slate-300" />
             <span>No saved presets found</span>
           </div>

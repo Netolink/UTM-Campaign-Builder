@@ -79,32 +79,32 @@ export default function UrlValidator({ url, onValidationChange }: UrlValidatorPr
   }, [url, validateUrl, onValidationChange]);
 
   return (
-    <div className="flex items-center gap-3 text-xs border border-slate-100 bg-slate-50/70 p-2.5 rounded-lg">
-      <div className="font-medium text-slate-500 uppercase tracking-wider text-[10px]">Real-time Validation:</div>
+    <div className="flex items-center gap-3 text-xs border border-[#e2e8f0] bg-white p-2.5 rounded-[4px]">
+      <div className="font-semibold text-[#64748B] uppercase tracking-wider text-[10px] font-sans">Real-time Validation:</div>
       <div className="flex-1 flex items-center gap-2">
         {status === "idle" && (
-          <span className="flex items-center gap-1.5 text-slate-400">
+          <span className="flex items-center gap-1.5 text-[#64748B]">
             <HelpCircle className="w-4 h-4 text-slate-300" />
             Enter a destination URL to validate
           </span>
         )}
 
         {status === "loading" && (
-          <span className="flex items-center gap-1.5 text-blue-600 font-medium">
+          <span className="flex items-center gap-1.5 text-[#3B82F6] font-medium">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
             Testing destination availability...
           </span>
         )}
 
         {status === "valid" && (
-          <span className="flex items-center gap-1.5 text-emerald-600 font-medium">
+          <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
             <CheckCircle2 className="w-4 h-4 fill-emerald-50 text-emerald-600" />
             Destination is Active {details.code ? `(${details.code} ${details.text || "OK"})` : ""}
           </span>
         )}
 
         {status === "invalid" && (
-          <span className="flex items-center gap-1.5 text-amber-600 font-medium break-all">
+          <span className="flex items-center gap-1.5 text-amber-600 font-semibold break-all">
             <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
             <span>
               {details.error || `Failed: Code ${details.code} ${details.text || ""}`}
@@ -117,7 +117,7 @@ export default function UrlValidator({ url, onValidationChange }: UrlValidatorPr
         <button
           type="button"
           onClick={() => validateUrl(url)}
-          className="p-1 hover:bg-slate-200/60 rounded-md text-slate-400 hover:text-slate-600 transition-colors"
+          className="p-1 hover:bg-slate-100 rounded-[4px] text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
           title="Force Re-validate"
         >
           <RefreshCw className="w-3.5 h-3.5" />

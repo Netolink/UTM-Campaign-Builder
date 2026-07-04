@@ -553,13 +553,13 @@ export default function BatchCreator({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Left Column: File Drop and Manual Paste (Takes 1/3) */}
-        <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs space-y-4">
+        <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-5 shadow-xs space-y-4">
           <div>
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+            <h3 className="text-xs font-bold text-[#191c1e] uppercase tracking-widest flex items-center gap-1.5 font-display">
               <UploadCloud className="w-4 h-4 text-slate-500" />
               Import Base URL List
             </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">
+            <p className="text-[11px] text-[#64748B] mt-0.5 font-sans">
               Upload a TXT/CSV file or paste newline-separated destination links
             </p>
           </div>
@@ -570,18 +570,18 @@ export default function BatchCreator({
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
+            className={`border-2 border-dashed rounded-[4px] p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
               isDragging
-                ? "border-slate-800 bg-slate-50 scale-98"
-                : "border-slate-200 bg-slate-50/30 hover:border-slate-400 hover:bg-slate-50/60"
+                ? "border-[#3B82F6] bg-blue-50/20 scale-98"
+                : "border-slate-200 bg-slate-50/30 hover:border-[#3B82F6]/60 hover:bg-slate-50/60"
             }`}
           >
-            <UploadCloud className={`w-8 h-8 transition-transform ${isDragging ? "scale-110 text-slate-800" : "text-slate-300"}`} />
-            <div>
-              <span className="text-xs font-semibold text-slate-700 block">
+            <UploadCloud className={`w-8 h-8 transition-transform ${isDragging ? "scale-110 text-[#3B82F6]" : "text-slate-300"}`} />
+            <div className="font-sans">
+              <span className="text-xs font-bold text-slate-700 block">
                 Drag & Drop files here
               </span>
-              <span className="text-[10px] text-slate-400 block mt-0.5">
+              <span className="text-[10px] text-[#64748B] block mt-0.5">
                 or click to browse from system (.csv or .txt)
               </span>
             </div>
@@ -596,7 +596,7 @@ export default function BatchCreator({
 
           <div className="relative flex py-1 items-center">
             <div className="flex-grow border-t border-slate-100"></div>
-            <span className="flex-shrink mx-3 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+            <span className="flex-shrink mx-3 text-[10px] font-bold text-slate-300 uppercase tracking-widest font-sans">
               or paste manually
             </span>
             <div className="flex-grow border-t border-slate-100"></div>
@@ -609,12 +609,12 @@ export default function BatchCreator({
               value={pasteText}
               onChange={(e) => setPasteText(e.target.value)}
               placeholder="https://example.com/item1&#10;https://example.com/item2&#10;https://example.com/item3"
-              className="w-full text-xs p-3 border border-slate-200 bg-slate-50/30 hover:bg-slate-50/10 focus:bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono leading-relaxed"
+              className="w-full text-xs p-3 border border-[#e2e8f0] bg-white focus:bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all font-mono leading-relaxed"
             />
             <button
               onClick={handlePasteSubmit}
               disabled={!pasteText.trim()}
-              className="w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="w-full py-2 bg-[#191c1e] text-white rounded-[4px] text-xs font-bold hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer font-sans"
             >
               Parse URLs & Append
             </button>
@@ -622,14 +622,14 @@ export default function BatchCreator({
         </div>
 
         {/* Right Columns: Global Base UTM Parameters Override (Takes 2/3) */}
-        <div className="lg:col-span-2 bg-white border border-slate-100 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white border border-[#e2e8f0] rounded-[8px] p-5 shadow-xs flex flex-col justify-between">
           <div className="space-y-4">
             <div>
-              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+              <h3 className="text-xs font-bold text-[#191c1e] uppercase tracking-widest flex items-center gap-1.5 font-display">
                 <Sparkles className="w-4 h-4 text-slate-500" />
                 Global / Bulk UTM Builder Config
               </h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-[#64748B] mt-0.5 font-sans">
                 Configure common tracking tags to apply instantly or fill empty cells in your list
               </p>
             </div>
@@ -637,7 +637,7 @@ export default function BatchCreator({
             {/* Inputs grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
                   Source
                 </label>
                 <input
@@ -645,12 +645,12 @@ export default function BatchCreator({
                   placeholder="e.g. facebook"
                   value={globalSource}
                   onChange={(e) => setGlobalSource(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/50 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800"
+                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
                   Medium
                 </label>
                 <input
@@ -658,12 +658,12 @@ export default function BatchCreator({
                   placeholder="e.g. cpc"
                   value={globalMedium}
                   onChange={(e) => setGlobalMedium(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/50 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800"
+                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
                   Campaign Name
                 </label>
                 <input
@@ -671,12 +671,12 @@ export default function BatchCreator({
                   placeholder="e.g. summer_sale"
                   value={globalCampaign}
                   onChange={(e) => setGlobalCampaign(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/50 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800"
+                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
                   Term (Keyword)
                 </label>
                 <input
@@ -684,12 +684,12 @@ export default function BatchCreator({
                   placeholder="e.g. marketing"
                   value={globalTerm}
                   onChange={(e) => setGlobalTerm(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/50 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800"
+                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
                   Content (Ad Variation)
                 </label>
                 <input
@@ -697,12 +697,12 @@ export default function BatchCreator({
                   placeholder="e.g. red_banner"
                   value={globalContent}
                   onChange={(e) => setGlobalContent(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/50 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800"
+                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
                   Campaign ID
                 </label>
                 <input
@@ -710,7 +710,7 @@ export default function BatchCreator({
                   placeholder="e.g. 98124"
                   value={globalId}
                   onChange={(e) => setGlobalId(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 bg-slate-50/50 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-800"
+                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
                 />
               </div>
             </div>
@@ -719,14 +719,14 @@ export default function BatchCreator({
           <div className="flex flex-col sm:flex-row items-center gap-2 mt-4 pt-4 border-t border-slate-100">
             <button
               onClick={() => handleApplyGlobalUTMs(false)}
-              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition-colors cursor-pointer"
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-50 hover:bg-slate-100 text-[#191c1e] text-xs font-semibold rounded-[4px] border border-[#e2e8f0] transition-colors cursor-pointer font-sans"
               title="Apply global values to blank fields only"
             >
               Fill Empty Row Fields
             </button>
             <button
               onClick={() => handleApplyGlobalUTMs(true)}
-              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 bg-[#191c1e] text-white text-xs font-bold rounded-[4px] hover:bg-black transition-colors cursor-pointer font-sans"
               title="Overwrite parameters on all existing rows"
             >
               Overwrite All Row Parameters
@@ -734,7 +734,7 @@ export default function BatchCreator({
             <button
               onClick={handleClearAll}
               disabled={rows.length === 0}
-              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 text-red-600 hover:bg-red-50 text-xs font-semibold rounded-xl transition-colors disabled:opacity-40 cursor-pointer sm:ml-auto"
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 text-red-600 hover:bg-red-50 text-xs font-semibold rounded-[4px] transition-colors disabled:opacity-40 cursor-pointer sm:ml-auto font-sans"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Clear Current List
@@ -744,18 +744,18 @@ export default function BatchCreator({
       </div>
 
       {/* Main Table Content Panel */}
-      <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs space-y-4">
+      <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-5 shadow-xs space-y-4">
         {/* Table Management Actions */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1 border-b border-slate-100">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5 font-display">
+            <h3 className="text-sm font-bold text-[#191c1e] flex items-center gap-1.5 font-display">
               <Layers className="w-4 h-4 text-slate-500" />
               Batch URL Builder Ledger
               <span className="px-1.5 py-0.5 text-[10px] bg-slate-100 text-slate-600 rounded-full font-bold">
                 {rows.length} rows
               </span>
             </h3>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-[#64748B] font-sans">
               Review, edit, and bulk-process campaign links in real-time
             </p>
           </div>
@@ -766,7 +766,7 @@ export default function BatchCreator({
                 <button
                   onClick={handleBulkShorten}
                   disabled={bulkShortening || shortenerService === "none"}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/50 text-emerald-700 text-xs font-semibold rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/50 text-emerald-700 text-xs font-semibold rounded-[4px] transition-colors cursor-pointer font-sans"
                   title="Run shortening on all valid links"
                 >
                   {bulkShortening ? (
@@ -778,7 +778,7 @@ export default function BatchCreator({
                 </button>
                 <button
                   onClick={() => copyAllLinks("full")}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-[4px] border border-[#e2e8f0] transition-colors cursor-pointer font-sans"
                   title="Copy all assembled URLs to clipboard"
                 >
                   <Copy className="w-3.5 h-3.5" />
@@ -786,7 +786,7 @@ export default function BatchCreator({
                 </button>
                 <button
                   onClick={handleBulkAddToHistory}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#191c1e] hover:bg-black text-white text-xs font-bold rounded-[4px] transition-colors cursor-pointer font-sans"
                   title="Persist all compiled rows to general history log"
                 >
                   <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
@@ -794,7 +794,7 @@ export default function BatchCreator({
                 </button>
                 <button
                   onClick={exportBatchToCSV}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-[4px] border border-[#e2e8f0] transition-colors cursor-pointer font-sans"
                   title="Export grid data to CSV file"
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -804,7 +804,7 @@ export default function BatchCreator({
             )}
             <button
               onClick={handleAddManualRow}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-semibold rounded-lg border border-blue-200 transition-colors ml-auto sm:ml-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#3B82F6] text-xs font-bold rounded-[4px] border border-blue-100 transition-colors ml-auto sm:ml-0 cursor-pointer font-sans"
             >
               <Plus className="w-3.5 h-3.5" />
               Add Row
@@ -813,10 +813,10 @@ export default function BatchCreator({
         </div>
 
         {/* The Grid / Table View */}
-        <div className="overflow-x-auto border border-slate-100 rounded-xl">
+        <div className="overflow-x-auto border border-[#e2e8f0] rounded-[8px]">
           <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-100 text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+              <tr className="bg-slate-50/80 border-b border-[#e2e8f0] text-[10px] text-[#64748B] font-bold uppercase tracking-widest font-sans">
                 <th className="px-3 py-3 w-[22%]">Website Destination Base URL</th>
                 <th className="px-3 py-3 w-[10%]">Source</th>
                 <th className="px-3 py-3 w-[10%]">Medium</th>
@@ -839,7 +839,7 @@ export default function BatchCreator({
                           placeholder="https://example.com/item"
                           value={row.baseUrl}
                           onChange={(e) => handleUpdateRow(row.id, "baseUrl", e.target.value)}
-                          className="w-full text-xs px-2 py-1.5 border border-slate-100 focus:border-slate-400 bg-transparent rounded-lg focus:outline-none focus:bg-white font-mono"
+                          className="w-full text-xs px-2 py-1.5 border border-[#e2e8f0] focus:border-[#3B82F6] bg-white rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 font-mono"
                         />
                       </td>
 
@@ -850,7 +850,7 @@ export default function BatchCreator({
                           placeholder="source"
                           value={row.utmSource}
                           onChange={(e) => handleUpdateRow(row.id, "utmSource", e.target.value)}
-                          className="w-full text-xs px-2 py-1.5 border border-slate-100 focus:border-slate-400 bg-transparent rounded-lg focus:outline-none focus:bg-white"
+                          className="w-full text-xs px-2 py-1.5 border border-[#e2e8f0] focus:border-[#3B82F6] bg-white rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
                         />
                       </td>
 
@@ -861,7 +861,7 @@ export default function BatchCreator({
                           placeholder="medium"
                           value={row.utmMedium}
                           onChange={(e) => handleUpdateRow(row.id, "utmMedium", e.target.value)}
-                          className="w-full text-xs px-2 py-1.5 border border-slate-100 focus:border-slate-400 bg-transparent rounded-lg focus:outline-none focus:bg-white"
+                          className="w-full text-xs px-2 py-1.5 border border-[#e2e8f0] focus:border-[#3B82F6] bg-white rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
                         />
                       </td>
 
@@ -872,7 +872,7 @@ export default function BatchCreator({
                           placeholder="campaign"
                           value={row.utmCampaign}
                           onChange={(e) => handleUpdateRow(row.id, "utmCampaign", e.target.value)}
-                          className="w-full text-xs px-2 py-1.5 border border-slate-100 focus:border-slate-400 bg-transparent rounded-lg focus:outline-none focus:bg-white"
+                          className="w-full text-xs px-2 py-1.5 border border-[#e2e8f0] focus:border-[#3B82F6] bg-white rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
                         />
                       </td>
 
@@ -880,13 +880,13 @@ export default function BatchCreator({
                       <td className="px-3 py-2.5 space-y-1">
                         {/* Short Link Display (if shortened) */}
                         {row.shortenedUrl ? (
-                          <div className="flex items-center justify-between gap-1.5 p-1 bg-emerald-50 rounded border border-emerald-100">
-                            <span className="font-mono text-[10.5px] font-semibold text-emerald-700 truncate max-w-[170px]">
+                          <div className="flex items-center justify-between gap-1.5 p-1 bg-emerald-50 rounded-[4px] border border-emerald-100">
+                            <span className="font-mono text-[10.5px] font-bold text-emerald-700 truncate max-w-[170px]">
                               {row.shortenedUrl}
                             </span>
                             <button
                               onClick={() => copyRowLink(row.shortenedUrl, row.id, "short")}
-                              className="p-1 hover:bg-emerald-100 rounded text-emerald-600 transition-colors"
+                              className="p-1 hover:bg-emerald-100 rounded-[4px] text-emerald-600 transition-colors cursor-pointer"
                               title="Copy Short URL"
                             >
                               {copiedId === row.id && copiedType === "short" ? (
@@ -900,7 +900,7 @@ export default function BatchCreator({
 
                         {/* Assembled Link Display */}
                         {compiled ? (
-                          <div className="flex items-center justify-between gap-1.5 p-1 bg-slate-50 rounded border border-slate-100">
+                          <div className="flex items-center justify-between gap-1.5 p-1 bg-slate-50 rounded-[4px] border border-[#e2e8f0]">
                             <span
                               className="font-mono text-[10px] text-slate-500 truncate max-w-[170px]"
                               title={compiled}
@@ -912,14 +912,14 @@ export default function BatchCreator({
                                 href={compiled}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="p-1 hover:bg-slate-200 rounded text-slate-400 hover:text-slate-600"
+                                className="p-1 hover:bg-slate-200 rounded-[4px] text-slate-400 hover:text-slate-600 cursor-pointer"
                                 title="Open in new tab"
                               >
                                 <ExternalLink className="w-3 h-3" />
                               </a>
                               <button
                                 onClick={() => copyRowLink(compiled, row.id, "full")}
-                                className="p-1 hover:bg-slate-200 rounded text-slate-500"
+                                className="p-1 hover:bg-slate-200 rounded-[4px] text-slate-500 cursor-pointer"
                                 title="Copy Full UTM URL"
                               >
                                 {copiedId === row.id && copiedType === "full" ? (
@@ -931,11 +931,11 @@ export default function BatchCreator({
                             </div>
                           </div>
                         ) : (
-                          <span className="text-[10px] text-slate-300 italic">Waiting for URL...</span>
+                          <span className="text-[10px] text-slate-300 italic font-sans">Waiting for URL...</span>
                         )}
 
                         {row.error && (
-                          <span className="text-[9px] text-red-500 block leading-tight">
+                          <span className="text-[9px] text-red-500 block leading-tight font-sans">
                             {row.error}
                           </span>
                         )}
@@ -964,7 +964,7 @@ export default function BatchCreator({
                               onClick={() =>
                                 setActiveQrRow(activeQrRow === row.id ? null : row.id)
                               }
-                              className="p-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-600 transition-colors relative cursor-pointer"
+                              className="p-1.5 bg-slate-50 hover:bg-slate-100 border border-[#e2e8f0] rounded-[4px] text-slate-600 transition-colors relative cursor-pointer"
                               title="Toggle Large QR view / Download"
                             >
                               <QrCode className="w-3.5 h-3.5" />
@@ -972,7 +972,7 @@ export default function BatchCreator({
 
                             {/* Popup Large QR Code Overlay */}
                             {activeQrRow === row.id && (
-                              <div className="absolute right-0 top-12 z-50 bg-white p-3 rounded-xl shadow-xl border border-slate-100 flex flex-col items-center gap-2 animate-fade-in w-36">
+                              <div className="absolute right-0 top-12 z-50 bg-white p-3 rounded-[8px] shadow-xl border border-[#e2e8f0] flex flex-col items-center gap-2 animate-fade-in w-36">
                                 <QRCodeCanvas
                                   value={row.shortenedUrl || compiled}
                                   size={100}
@@ -986,7 +986,7 @@ export default function BatchCreator({
                                   onClick={() =>
                                     downloadRowQRCode(row.id, row.utmCampaign || "batch-qr")
                                   }
-                                  className="w-full flex items-center justify-center gap-1.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-[10px] font-semibold transition-colors"
+                                  className="w-full flex items-center justify-center gap-1.5 py-1 bg-blue-50 hover:bg-blue-100 text-[#3B82F6] rounded-[4px] text-[10px] font-bold transition-colors cursor-pointer"
                                 >
                                   <Download className="w-3 h-3" />
                                   Download
@@ -994,7 +994,7 @@ export default function BatchCreator({
                                 <button
                                   type="button"
                                   onClick={() => setActiveQrRow(null)}
-                                  className="text-[9px] text-slate-400 hover:text-slate-600 underline font-semibold cursor-pointer"
+                                  className="text-[9px] text-[#64748B] hover:text-[#191c1e] underline font-bold cursor-pointer font-sans"
                                 >
                                   Close
                                 </button>
@@ -1008,12 +1008,12 @@ export default function BatchCreator({
 
                       {/* Actions / Shorten / Delete Cell */}
                       <td className="px-3 py-2.5 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                        <div className="flex items-center justify-end gap-1.5 font-sans">
                           {compiled && !row.shortenedUrl && shortenerService !== "none" && (
                             <button
                               onClick={() => handleShortenRow(row.id)}
                               disabled={row.isShortening}
-                              className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 text-[10px] font-bold rounded border border-emerald-100 transition-colors disabled:opacity-50"
+                              className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 text-[10px] font-bold rounded-[4px] border border-emerald-100 transition-colors disabled:opacity-50 cursor-pointer"
                               title="Shorten link"
                             >
                               {row.isShortening ? (
@@ -1025,7 +1025,7 @@ export default function BatchCreator({
                           )}
                           <button
                             onClick={() => handleDeleteRow(row.id)}
-                            className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-[4px] transition-colors cursor-pointer"
                             title="Remove row"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1037,18 +1037,18 @@ export default function BatchCreator({
                 })
               ) : (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-400">
-                    <div className="flex flex-col items-center justify-center gap-2">
+                  <td colSpan={7} className="py-12 text-center text-[#64748B]">
+                    <div className="flex flex-col items-center justify-center gap-2 font-sans">
                       <Layers className="w-8 h-8 text-slate-200" />
-                      <span className="font-semibold text-xs text-slate-500">
+                      <span className="font-bold text-xs text-[#191c1e]">
                         No batch entries loaded
                       </span>
-                      <span className="text-[10px] text-slate-400 max-w-sm mx-auto">
+                      <span className="text-[10px] text-[#64748B] max-w-sm mx-auto">
                         Paste a list of URLs, import a CSV, or click "Add Row" to begin creating links in bulk.
                       </span>
                       <button
                         onClick={handleAddManualRow}
-                        className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-semibold hover:bg-slate-800 transition-colors"
+                        className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-[#191c1e] text-white rounded-[4px] text-xs font-bold hover:bg-black transition-colors cursor-pointer"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         Add First Row
