@@ -36,6 +36,7 @@ import {
   deleteUserHistoryLog,
   saveUserShortenerSettings,
   clearUserHistoryLogs,
+  isUsingDummyConfig,
 } from "./lib/firebase";
 
 import {
@@ -114,6 +115,8 @@ export default function App() {
   // User Authentication State
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [showAuthErrorModal, setShowAuthErrorModal] = useState(false);
+  const [authErrorMessage, setAuthErrorMessage] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -177,12 +180,48 @@ export default function App() {
   }, []);
 
   const handleLogin = async () => {
+    if (isUsingDummyConfig) {
+      setAuthErrorMessage(
+        "נראה שדף ה-GitHub Pages שלך נבנה ללא הגדרות ה-Firebase האמיתיות שלך (מכיוון שהקובץ firebase-applet-config.json נמצא ב-.gitignore ולא עולה ל-GitHub).\n\n" +
+        "כדי לאפשר התחברות וסנכרון לענן ב-GitHub Pages, עליך לבצע את השלבים הבאים:\n\n" +
+        "1. כנס ל-Repository שלך ב-GitHub.\n" +
+        "2. מעבר אל Settings -> Secrets and variables -> Actions.\n" +
+        "3. לחץ על 'New repository secret' והוסף את המשתנים הבאים (תוכל להעתיק את הערכים שלהם מקובץ הקונפיגורציה המקומי שלך ב-AI Studio):\n" +
+        "   - VITE_FIREBASE_API_KEY\n" +
+        "   - VITE_FIREBASE_AUTH_DOMAIN\n" +
+        "   - VITE_FIREBASE_PROJECT_ID\n" +
+        "   - VITE_FIREBASE_STORAGE_BUCKET\n" +
+        "   - VITE_FIREBASE_MESSAGING_SENDER_ID\n" +
+        "   - VITE_FIREBASE_APP_ID\n\n" +
+        "4. לאחר הוספת ה-Secrets, בצע Push חדש או הפעל מחדש את ה-Workflow כדי לבנות מחדש את האתר עם הפרטים האמיתיים!"
+      );
+      setShowAuthErrorModal(true);
+      return;
+    }
+
     try {
       await signInWithGoogle();
       showTemporaryNotification("Successfully signed in with Google!");
     } catch (err: any) {
       console.error("Sign-in failure:", err);
-      showTemporaryNotification("Sign-in failed. Please try again.");
+      const isIframe = window.self !== window.top;
+      if (isIframe || err.code === "auth/iframe-directory-not-supported" || err.code === "auth/popup-blocked" || err.message?.includes("iframe")) {
+        setAuthErrorMessage(
+          "התחברות עם גוגל חסומה בתוך חלון ה-iFrame של התצוגה המקדימה בשל מגבלות אבטחה של הדפדפנים על Cross-Origin. \n\nכדי להתחבר בהצלחה ולסנכרן את הנתונים שלך לענן (Firestore), אנא לחץ על כפתור ה- \"Open in new tab\" (פתח בלשונית חדשה) בפינה הימנית העליונה של מסך התצוגה המקדימה ב-AI Studio, והתחבר משם ללא שום בעיה!"
+        );
+      } else if (err.code === "auth/unauthorized-domain") {
+        setAuthErrorMessage(
+          "שגיאת דומיין לא מורשה (Unauthorized Domain).\n\n" +
+          "עליך לאשר את הדומיין של GitHub Pages בתוך ממשק הניהול של Firebase:\n\n" +
+          "1. היכנס ל-Firebase Console.\n" +
+          "2. עבור ללשונית Authentication -> Settings (הגדרות) -> Authorized domains (דומיינים מורשים).\n" +
+          "3. לחץ על 'Add domain' והוסף את הדומיין שלך: netolink.github.io\n" +
+          "4. שמור ונסה להתחבר מחדש!"
+        );
+      } else {
+        setAuthErrorMessage(err.message || "שגיאה בעת התחברות. אנא ודא שאישרת חלונות קופצים (Popups) בדפדפן, שהדומיין מורשה ב-Firebase Console ונסה שוב.");
+      }
+      setShowAuthErrorModal(true);
     }
   };
 
@@ -1331,6 +1370,36 @@ export default function App() {
           }
         }}
       />
+
+      {/* Auth Error Modal */}
+      {showAuthErrorModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-fade-in" dir="rtl">
+          <div className="relative w-full max-w-md bg-white rounded-[8px] shadow-xl border border-[#e2e8f0] p-6 flex flex-col gap-4 text-right">
+            <div className="flex items-center gap-3 justify-start border-b border-slate-100 pb-3">
+              <div className="p-2 bg-amber-50 text-amber-600 rounded-[4px]">
+                <AlertCircle className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-[#191c1e] font-display">התחברות באמצעות גוגל חסומה</h3>
+                <p className="text-[10px] text-slate-400 font-sans">Google Sign-In Blocked in Preview Frame</p>
+              </div>
+            </div>
+            
+            <div className="text-xs text-slate-700 leading-relaxed font-sans whitespace-pre-wrap">
+              {authErrorMessage}
+            </div>
+
+            <div className="flex justify-end gap-2 mt-2">
+              <button
+                onClick={() => setShowAuthErrorModal(false)}
+                className="px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-[4px] shadow-sm transition-colors cursor-pointer font-sans"
+              >
+                הבנתי, תודה
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

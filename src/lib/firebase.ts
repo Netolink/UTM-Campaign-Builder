@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -17,7 +18,29 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { CampaignPreset, UTMTemplate, HistoryLog, ShortenerSettings } from "../types";
-import firebaseConfig from "../../firebase-applet-config.json";
+import localFirebaseConfig from "../../firebase-applet-config.json";
+
+// Construct the configuration, prioritizing environment variables (e.g. in GitHub Actions / production deploy)
+// over the local firebase-applet-config.json file which is not committed to Git.
+const isCustomProject = !!import.meta.env.VITE_FIREBASE_PROJECT_ID && import.meta.env.VITE_FIREBASE_PROJECT_ID !== localFirebaseConfig.projectId;
+
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || localFirebaseConfig.apiKey,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || localFirebaseConfig.authDomain,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || localFirebaseConfig.projectId,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || localFirebaseConfig.storageBucket,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || localFirebaseConfig.messagingSenderId,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || localFirebaseConfig.appId,
+  firestoreDatabaseId: isCustomProject 
+    ? (import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || undefined)
+    : (import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || localFirebaseConfig.firestoreDatabaseId),
+};
+
+// Check if we are running with dummy/placeholder config (e.g., when built on GitHub without custom secrets)
+export const isUsingDummyConfig = 
+  !firebaseConfig.apiKey || 
+  firebaseConfig.apiKey.includes("dummy") || 
+  firebaseConfig.projectId.includes("dummy");
 
 // Initialize Firebase App
 const app = initializeApp(firebaseConfig);
