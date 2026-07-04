@@ -1,0 +1,6 @@
+{
+  "name": "UTM Campaign Builder",
+  "description": "A full-featured UTM builder for marketing campaigns with custom templates, preset manager, TinyURL/Bitly/Rebrandly shorteners, and real-time link validation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

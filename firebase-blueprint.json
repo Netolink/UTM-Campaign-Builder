@@ -1,0 +1,84 @@
+{
+  "collections": {
+    "users": {
+      "schema": {
+        "shortenerSettings": {
+          "type": "map",
+          "properties": {
+            "bitlyToken": "string",
+            "rebrandlyKey": "string",
+            "tinyurlToken": "string",
+            "dubToken": "string",
+            "bitlyDomain": "string",
+            "rebrandlyDomain": "string",
+            "tinyurlDomain": "string",
+            "dubDomain": "string"
+          }
+        },
+        "updatedAt": "timestamp"
+      },
+      "subcollections": {
+        "presets": {
+          "schema": {
+            "id": "string",
+            "name": "string",
+            "baseUrl": "string",
+            "utmSource": "string",
+            "utmMedium": "string",
+            "utmCampaign": "string",
+            "utmTerm": "string",
+            "utmContent": "string",
+            "utmId": "string",
+            "customParams": {
+              "type": "array",
+              "items": {
+                "type": "map",
+                "properties": {
+                  "id": "string",
+                  "key": "string",
+                  "value": "string"
+                }
+              }
+            },
+            "createdAt": "string"
+          }
+        },
+        "templates": {
+          "schema": {
+            "id": "string",
+            "name": "string",
+            "description": "string",
+            "isBuiltIn": "boolean",
+            "utmSource": "string",
+            "utmMedium": "string",
+            "utmCampaign": "string",
+            "utmTerm": "string",
+            "utmContent": "string",
+            "utmId": "string",
+            "customParams": {
+              "type": "array",
+              "items": {
+                "type": "map",
+                "properties": {
+                  "key": "string",
+                  "value": "string"
+                }
+              }
+            }
+          }
+        },
+        "history": {
+          "schema": {
+            "id": "string",
+            "campaignName": "string",
+            "baseUrl": "string",
+            "fullUrl": "string",
+            "shortUrl": "string",
+            "shortenerService": "string",
+            "createdAt": "string"
+          }
+        }
+      }
+    }
+  }
+}
