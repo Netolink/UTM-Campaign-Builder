@@ -46,11 +46,22 @@ export default function UrlValidator({ url, onValidationChange, lang = "en" }: U
         body: JSON.stringify({ url: targetUrl }),
       });
 
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("text/html") || response.status === 404) {
+        throw new Error("STATIC_HOSTING_NO_BACKEND");
+      }
+
       if (!response.ok) {
         throw new Error(`Server returned status ${response.status}`);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new Error("STATIC_HOSTING_NO_BACKEND");
+      }
+
       if (data.valid) {
         setStatus("valid");
         setDetails({ code: data.status, text: data.statusText });
@@ -61,11 +72,17 @@ export default function UrlValidator({ url, onValidationChange, lang = "en" }: U
         if (onValidationChange) onValidationChange(false);
       }
     } catch (err: any) {
-      setStatus("invalid");
-      setDetails({ error: t.validationNetworkError });
-      if (onValidationChange) onValidationChange(false);
+      if (err.message === "STATIC_HOSTING_NO_BACKEND") {
+        setStatus("valid");
+        setDetails({ error: t.validationStaticHost });
+        if (onValidationChange) onValidationChange(true);
+      } else {
+        setStatus("invalid");
+        setDetails({ error: t.validationNetworkError });
+        if (onValidationChange) onValidationChange(false);
+      }
     }
-  }, [onValidationChange, t.invalidUrlFormat, t.validationNetworkError]);
+  }, [onValidationChange, t.invalidUrlFormat, t.validationNetworkError, t.validationStaticHost]);
 
   // Debounce validation on URL changes
   useEffect(() => {
@@ -105,8 +122,8 @@ export default function UrlValidator({ url, onValidationChange, lang = "en" }: U
         {status === "valid" && (
           <span className={`flex items-center gap-1.5 text-emerald-600 font-semibold ${isRtl ? "flex-row-reverse" : ""}`}>
             <CheckCircle2 className="w-4 h-4 fill-emerald-50 text-emerald-600 shrink-0" />
-            <span>
-              {t.destinationActive} {details.code ? `(${details.code} ${details.text || "OK"})` : ""}
+            <span className={isRtl ? "text-right text-xs" : "text-left text-xs"}>
+              {details.error || `${t.destinationActive} ${details.code ? `(${details.code} ${details.text || "OK"})` : ""}`}
             </span>
           </span>
         )}
@@ -114,8 +131,8 @@ export default function UrlValidator({ url, onValidationChange, lang = "en" }: U
         {status === "invalid" && (
           <span className={`flex items-center gap-1.5 text-amber-600 font-semibold break-all ${isRtl ? "flex-row-reverse" : ""}`}>
             <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-            <span className={isRtl ? "text-right" : "text-left"}>
-              {details.error || `Failed: Code {details.code} {details.text || ""}`}
+            <span className={isRtl ? "text-right text-xs" : "text-left text-xs"}>
+              {details.error || (details.code ? `Failed: Code ${details.code} ${details.text || ""}` : "Verification failed")}
             </span>
           </span>
         )}

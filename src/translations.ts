@@ -119,6 +119,7 @@ export interface TranslationDict {
   forceRevalidate: string;
   invalidUrlFormat: string;
   validationNetworkError: string;
+  validationStaticHost: string;
 
   // API Integration settings modal
   apiSettingsTitle: string;
@@ -262,7 +263,8 @@ export const translations: Record<Language, TranslationDict> = {
     destinationActive: "Destination is Active",
     forceRevalidate: "Force Re-validate",
     invalidUrlFormat: "Invalid URL format. Include http:// or https://",
-    validationNetworkError: "Failed to validate URL due to network error.",
+    validationNetworkError: "URL is formatted correctly! However, live check failed due to a network or connection issue (the site might be offline or blocking external requests).",
+    validationStaticHost: "URL format is valid! (Live ping verification is skipped as the app is running as a static site without a backend).",
 
     // API Integration settings modal
     apiSettingsTitle: "API Integration Settings",
@@ -404,7 +406,8 @@ export const translations: Record<Language, TranslationDict> = {
     destinationActive: "כתובת היעד פעילה ומחוברת",
     forceRevalidate: "אימות מחדש",
     invalidUrlFormat: "פורמט כתובת אתר לא תקין. יש לכלול http:// או https://",
-    validationNetworkError: "שגיאה באימות כתובת האתר עקב שגיאת רשת.",
+    validationNetworkError: "פורמט הכתובת תקין לחלוטין! עם זאת, הבדיקה נכשלה עקב שגיאת חיבור או רשת (ייתכן שהאתר לא פעיל, חוסם פניות חיצוניות או שאין חיבור תקין לשרת הבדיקה).",
+    validationStaticHost: "פורמט הכתובת תקין! (בדיקת הזמינות דורשת שרת אחורי ואינה פעילה כאשר האפליקציה רצה כאתר סטטי ללא שרת).",
 
     // API Integration settings modal
     apiSettingsTitle: "הגדרות אינטגרציה של API",
@@ -546,7 +549,8 @@ export const translations: Record<Language, TranslationDict> = {
     destinationActive: "Сайт доступен и активен",
     forceRevalidate: "Проверить повторно",
     invalidUrlFormat: "Неверный формат URL. Должен содержать http:// или https://",
-    validationNetworkError: "Не удалось проверить URL из-за сетевой ошибки.",
+    validationNetworkError: "Формат ссылки верен! Однако проверка доступности не удалась из-за сетевой ошибки или проблем с подключением (сайт может быть офлайн или блокировать запросы).",
+    validationStaticHost: "Формат ссылки верен! (Живая проверка пропущена, так как приложение работает как статический сайт без бэкенда).",
 
     // API Integration settings modal
     apiSettingsTitle: "Настройки интеграции API",
