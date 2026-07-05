@@ -23,8 +23,10 @@ import {
 } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, updateDoc, increment, arrayUnion } from "firebase/firestore";
 import {
   auth,
+  db,
   signInWithGoogle,
   logout,
   getUserData,
@@ -50,12 +52,12 @@ import {
 import { translations, Language } from "./translations";
 
 import { shortenUrl } from "./lib/shortener";
-import UrlValidator from "./components/UrlValidator";
 import SettingsModal from "./components/SettingsModal";
 import TemplateManager from "./components/TemplateManager";
 import PresetSelector from "./components/PresetSelector";
 import HistoryLogTable from "./components/HistoryLogTable";
 import BatchCreator from "./components/BatchCreator";
+import { LegalModal } from "./components/LegalModal";
 
 export default function App() {
   // Language Support
@@ -90,12 +92,16 @@ export default function App() {
 
   // Form State
   const [baseUrl, setBaseUrl] = useState("");
+  const [destinationType, setDestinationType] = useState<"website" | "playstore" | "appstore">("website");
   const [utmSource, setUtmSource] = useState("");
   const [utmMedium, setUtmMedium] = useState("");
   const [utmCampaign, setUtmCampaign] = useState("");
   const [utmTerm, setUtmTerm] = useState("");
   const [utmContent, setUtmContent] = useState("");
   const [utmId, setUtmId] = useState("");
+  const [appStorePt, setAppStorePt] = useState("");
+  const [appStoreMt, setAppStoreMt] = useState("8");
+  const [appStoreAt, setAppStoreAt] = useState("");
   const [customParams, setCustomParams] = useState<CustomParameter[]>([]);
 
   // Persistent Collections (LocalStorage state)
@@ -138,12 +144,84 @@ export default function App() {
   // System UI/Modal States
   const [activeTab, setActiveTab] = useState<"creator" | "batch" | "templates" | "history">("creator");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
   const [currentTemplateId, setCurrentTemplateId] = useState<string | undefined>(undefined);
   const [currentPresetId, setCurrentPresetId] = useState<string | undefined>(undefined);
   const [copiedLink, setCopiedLink] = useState<"full" | "short" | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
   const [qrTarget, setQrTarget] = useState<"full" | "short">("full");
   const [qrColor, setQrColor] = useState("#0F172A");
+
+  // Redirection tracker state
+  const [redirectState, setRedirectState] = useState<{
+    status: "idle" | "loading" | "error";
+    message?: string;
+  }>({ status: "idle" });
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const rParam = searchParams.get("r");
+    if (rParam) {
+      handleRedirection(rParam);
+    }
+  }, []);
+
+  const handleRedirection = async (param: string) => {
+    setRedirectState({ status: "loading" });
+    try {
+      // Format is: userId_logId
+      const underscoreIndex = param.indexOf("_");
+      if (underscoreIndex === -1) {
+        throw new Error("Invalid tracker link format.");
+      }
+      const userId = param.substring(0, underscoreIndex);
+      const logId = param.substring(underscoreIndex + 1);
+
+      if (!userId || !logId) {
+        throw new Error("Invalid tracker parameters.");
+      }
+
+      // Fetch the log document
+      const logDocRef = doc(db, "users", userId, "history", logId);
+      const logDoc = await getDoc(logDocRef);
+      if (!logDoc.exists()) {
+        throw new Error("Tracking link not found or expired.");
+      }
+
+      const logData = logDoc.data() as HistoryLog;
+      const targetUrl = logData.shortUrl || logData.fullUrl;
+      if (!targetUrl) {
+        throw new Error("No destination URL found.");
+      }
+
+      // Record click analytics
+      const userAgent = navigator.userAgent;
+      const referrer = document.referrer || "Direct";
+      const timestamp = new Date().toISOString();
+
+      try {
+        await updateDoc(logDocRef, {
+          clicks: increment(1),
+          clickDetails: arrayUnion({
+            timestamp,
+            userAgent,
+            referrer,
+          }),
+        });
+      } catch (updateErr) {
+        console.error("Failed to write analytics click:", updateErr);
+      }
+
+      // Perform redirection
+      window.location.replace(targetUrl);
+    } catch (err: any) {
+      console.error("Redirection tracking error:", err);
+      setRedirectState({
+        status: "error",
+        message: err.message || "An unexpected error occurred.",
+      });
+    }
+  };
 
   // User Authentication State
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -311,24 +389,100 @@ export default function App() {
       }
       const urlObj = new URL(targetUrl);
 
-      if (utmSource.trim()) urlObj.searchParams.set("utm_source", utmSource.trim());
-      if (utmMedium.trim()) urlObj.searchParams.set("utm_medium", utmMedium.trim());
-      if (utmCampaign.trim()) urlObj.searchParams.set("utm_campaign", utmCampaign.trim());
-      if (utmTerm.trim()) urlObj.searchParams.set("utm_term", utmTerm.trim());
-      if (utmContent.trim()) urlObj.searchParams.set("utm_content", utmContent.trim());
-      if (utmId.trim()) urlObj.searchParams.set("utm_id", utmId.trim());
+      if (destinationType === "playstore") {
+        // Collect all standard and custom params for the 'referrer'
+        const referrerParams = new URLSearchParams();
+        if (utmSource.trim()) referrerParams.set("utm_source", utmSource.trim());
+        if (utmMedium.trim()) referrerParams.set("utm_medium", utmMedium.trim());
+        if (utmCampaign.trim()) referrerParams.set("utm_campaign", utmCampaign.trim());
+        if (utmTerm.trim()) referrerParams.set("utm_term", utmTerm.trim());
+        if (utmContent.trim()) referrerParams.set("utm_content", utmContent.trim());
+        if (utmId.trim()) referrerParams.set("utm_id", utmId.trim());
 
-      customParams.forEach((param) => {
-        if (param.key.trim() && param.value.trim()) {
-          urlObj.searchParams.set(param.key.trim(), param.value.trim());
+        customParams.forEach((param) => {
+          if (param.key.trim() && param.value.trim()) {
+            referrerParams.set(param.key.trim(), param.value.trim());
+          }
+        });
+
+        // Strip existing UTM params from play store URL to avoid clutter
+        const paramsToStrip = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "utm_id", "referrer"];
+        paramsToStrip.forEach(p => urlObj.searchParams.delete(p));
+
+        const referrerString = referrerParams.toString();
+        if (referrerString) {
+          urlObj.searchParams.set("referrer", referrerString);
         }
-      });
+      } else if (destinationType === "appstore") {
+        // Standard UTMs
+        if (utmSource.trim()) urlObj.searchParams.set("utm_source", utmSource.trim());
+        if (utmMedium.trim()) urlObj.searchParams.set("utm_medium", utmMedium.trim());
+        if (utmCampaign.trim()) urlObj.searchParams.set("utm_campaign", utmCampaign.trim());
+        if (utmTerm.trim()) urlObj.searchParams.set("utm_term", utmTerm.trim());
+        if (utmContent.trim()) urlObj.searchParams.set("utm_content", utmContent.trim());
+        if (utmId.trim()) urlObj.searchParams.set("utm_id", utmId.trim());
+
+        customParams.forEach((param) => {
+          if (param.key.trim() && param.value.trim()) {
+            urlObj.searchParams.set(param.key.trim(), param.value.trim());
+          }
+        });
+
+        // App Store Specific parameters
+        // ct: Campaign Token (equivalent to utm_campaign)
+        if (utmCampaign.trim()) {
+          urlObj.searchParams.set("ct", utmCampaign.trim());
+        } else {
+          urlObj.searchParams.delete("ct");
+        }
+        
+        // pt: Provider Token
+        if (appStorePt.trim()) {
+          urlObj.searchParams.set("pt", appStorePt.trim());
+        } else {
+          urlObj.searchParams.delete("pt");
+        }
+
+        // mt: Media Type (default to 8 for apps)
+        if (appStoreMt.trim()) {
+          urlObj.searchParams.set("mt", appStoreMt.trim());
+        } else {
+          urlObj.searchParams.delete("mt");
+        }
+
+        // at: Affiliate Token
+        if (appStoreAt.trim()) {
+          urlObj.searchParams.set("at", appStoreAt.trim());
+        } else {
+          urlObj.searchParams.delete("at");
+        }
+      } else {
+        // Default standard website
+        if (utmSource.trim()) urlObj.searchParams.set("utm_source", utmSource.trim());
+        if (utmMedium.trim()) urlObj.searchParams.set("utm_medium", utmMedium.trim());
+        if (utmCampaign.trim()) urlObj.searchParams.set("utm_campaign", utmCampaign.trim());
+        if (utmTerm.trim()) urlObj.searchParams.set("utm_term", utmTerm.trim());
+        if (utmContent.trim()) urlObj.searchParams.set("utm_content", utmContent.trim());
+        if (utmId.trim()) urlObj.searchParams.set("utm_id", utmId.trim());
+
+        // Apple specific query tokens might exist if preset/template was switched, clear them in pure standard website mode
+        urlObj.searchParams.delete("ct");
+        urlObj.searchParams.delete("pt");
+        urlObj.searchParams.delete("mt");
+        urlObj.searchParams.delete("at");
+
+        customParams.forEach((param) => {
+          if (param.key.trim() && param.value.trim()) {
+            urlObj.searchParams.set(param.key.trim(), param.value.trim());
+          }
+        });
+      }
 
       return urlObj.toString();
     } catch (e) {
       return "";
     }
-  }, [baseUrl, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, utmId, customParams]);
+  }, [baseUrl, destinationType, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, utmId, customParams, appStorePt, appStoreMt, appStoreAt]);
 
   useEffect(() => {
     setShortenedUrl("");
@@ -339,12 +493,16 @@ export default function App() {
   // Form Reset
   const handleResetForm = () => {
     setBaseUrl("");
+    setDestinationType("website");
     setUtmSource("");
     setUtmMedium("");
     setUtmCampaign("");
     setUtmTerm("");
     setUtmContent("");
     setUtmId("");
+    setAppStorePt("");
+    setAppStoreMt("8");
+    setAppStoreAt("");
     setCustomParams([]);
     setCurrentTemplateId(undefined);
     setCurrentPresetId(undefined);
@@ -363,12 +521,16 @@ export default function App() {
 
   // Select Template: preserves base url, updates fields
   const handleSelectTemplate = (template: UTMTemplate) => {
+    setDestinationType(template.destinationType || "website");
     setUtmSource(template.utmSource || "");
     setUtmMedium(template.utmMedium || "");
     setUtmCampaign(template.utmCampaign || "");
     setUtmTerm(template.utmTerm || "");
     setUtmContent(template.utmContent || "");
     setUtmId(template.utmId || "");
+    setAppStorePt(template.appStorePt || "");
+    setAppStoreMt(template.appStoreMt || "8");
+    setAppStoreAt(template.appStoreAt || "");
 
     if (template.customParams) {
       setCustomParams(
@@ -395,15 +557,19 @@ export default function App() {
       name,
       description,
       isBuiltIn: false,
+      destinationType,
       utmSource,
       utmMedium,
       utmCampaign,
       utmTerm,
       utmContent,
       utmId,
+      appStorePt,
+      appStoreMt,
+      appStoreAt,
       customParams: customParams
-        .filter((p) => p.key.trim() && p.value.trim())
-        .map((p) => ({ key: p.key.trim(), value: p.value.trim() })),
+         .filter((p) => p.key.trim() && p.value.trim())
+         .map((p) => ({ key: p.key.trim(), value: p.value.trim() })),
     };
     setCustomTemplates([newTemplate, ...customTemplates]);
     showTemporaryNotification(`Saved template "${name}" successfully.`);
@@ -437,12 +603,16 @@ export default function App() {
   // Select Preset: loads EVERYTHING including destination URL
   const handleSelectPreset = (preset: CampaignPreset) => {
     setBaseUrl(preset.baseUrl);
+    setDestinationType(preset.destinationType || "website");
     setUtmSource(preset.utmSource);
     setUtmMedium(preset.utmMedium);
     setUtmCampaign(preset.utmCampaign);
     setUtmTerm(preset.utmTerm);
     setUtmContent(preset.utmContent);
     setUtmId(preset.utmId);
+    setAppStorePt(preset.appStorePt || "");
+    setAppStoreMt(preset.appStoreMt || "8");
+    setAppStoreAt(preset.appStoreAt || "");
     setCustomParams(preset.customParams || []);
     setCurrentPresetId(preset.id);
     setCurrentTemplateId(undefined);
@@ -456,12 +626,16 @@ export default function App() {
       id: `preset-${Date.now()}`,
       name,
       baseUrl,
+      destinationType,
       utmSource,
       utmMedium,
       utmCampaign,
       utmTerm,
       utmContent,
       utmId,
+      appStorePt,
+      appStoreMt,
+      appStoreAt,
       customParams,
       createdAt: new Date().toISOString(),
     };
@@ -639,6 +813,57 @@ export default function App() {
       }
     }
   };
+
+  if (redirectState.status === "loading") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6 font-sans" dir={isRtl ? "rtl" : "ltr"}>
+        <div className="max-w-md w-full text-center space-y-6 bg-white border border-[#e2e8f0] rounded-[12px] p-8 shadow-sm">
+          <div className="flex justify-center">
+            <Loader2 className="w-12 h-12 text-slate-900 animate-spin" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-lg font-bold text-slate-900 font-display">
+              {lang === "he" ? "מנתב אותך ליעד..." : lang === "ru" ? "Перенаправление..." : "Redirecting you..."}
+            </h2>
+            <p className="text-sm text-slate-500 font-sans">
+              {lang === "he" ? "רושם את הקליק ומעביר אותך בצורה מאובטחת." : lang === "ru" ? "Регистрируем клик и безопасно перенаправляем вас." : "We are registering your click and securely redirecting you."}
+            </p>
+          </div>
+          <div className="text-[11px] text-slate-400 font-mono">
+            {window.location.host}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (redirectState.status === "error") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6 font-sans" dir={isRtl ? "rtl" : "ltr"}>
+        <div className="max-w-md w-full text-center space-y-6 bg-white border border-red-200 rounded-[12px] p-8 shadow-sm">
+          <div className="flex justify-center text-red-500">
+            <AlertCircle className="w-12 h-12" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-lg font-bold text-slate-900 font-display">
+              {lang === "he" ? "שגיאת ניתוב" : lang === "ru" ? "Ошибка перенаправления" : "Redirection Error"}
+            </h2>
+            <p className="text-sm text-red-600 font-sans">
+              {redirectState.message}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              window.location.href = window.location.origin;
+            }}
+            className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-[6px] transition-colors cursor-pointer"
+          >
+            {lang === "he" ? "חזרה לאפליקציה" : lang === "ru" ? "Вернуться на главную" : "Go to Main App"}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div dir={isRtl ? "rtl" : "ltr"} className="flex flex-col min-h-screen bg-[#f7f9fb] text-[#191c1e] font-sans antialiased selection:bg-[#000000] selection:text-white">
@@ -834,14 +1059,73 @@ export default function App() {
                 <div className="border-b border-slate-100 pb-4">
                   <h2 className={`text-base font-bold text-[#191c1e] flex items-center gap-2 font-display ${isRtl ? "text-right" : "text-left"}`}>
                     <Globe className="w-4.5 h-4.5 text-slate-500" />
-                    {t.urlTitle}
+                    {destinationType === "playstore" ? (lang === "he" ? "1. פרטי אפליקציה ב-Google Play" : "1. Google Play App Details") : destinationType === "appstore" ? (lang === "he" ? "1. פרטי אפליקציה ב-App Store" : "1. App Store App Details") : t.urlTitle}
                   </h2>
+                </div>
+
+                {/* Destination Type Selector */}
+                <div className="space-y-2">
+                  <label className={`block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px] font-sans ${isRtl ? "text-right" : "text-left"}`}>
+                    {lang === "he" ? "סוג יעד הקמפיין" : lang === "ru" ? "Тип назначения кампании" : "Campaign Destination Type"}
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDestinationType("website");
+                      }}
+                      className={`py-2 px-3 text-xs font-bold rounded-[4px] border transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5 ${
+                        destinationType === "website"
+                          ? "bg-slate-900 border-slate-900 text-white shadow-xs"
+                          : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100/70"
+                      }`}
+                    >
+                      <Globe className="w-4 h-4" />
+                      <span>{lang === "he" ? "אתר אינטרנט" : lang === "ru" ? "Веб-сайт" : "Website"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDestinationType("playstore");
+                      }}
+                      className={`py-2 px-3 text-xs font-bold rounded-[4px] border transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5 ${
+                        destinationType === "playstore"
+                          ? "bg-slate-900 border-slate-900 text-white shadow-xs"
+                          : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100/70"
+                      }`}
+                    >
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3,5.27V18.73L16.55,12L3,5.27M17,12L21,14.25V9.75L17,12Z" />
+                      </svg>
+                      <span>Google Play</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDestinationType("appstore");
+                      }}
+                      className={`py-2 px-3 text-xs font-bold rounded-[4px] border transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5 ${
+                        destinationType === "appstore"
+                          ? "bg-slate-900 border-slate-900 text-white shadow-xs"
+                          : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100/70"
+                      }`}
+                    >
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.1,16.67C20.08,16.74 19.67,18.11 18.71,19.5M15.97,4.17C16.63,3.37 17.07,2.28 16.95,1C16,1.04 14.9,1.6 14.24,2.38C13.68,3.04 13.19,4.14 13.34,5.39C14.39,5.47 15.4,4.88 15.97,4.17Z" />
+                      </svg>
+                      <span>App Store</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Website Destination Input */}
                 <div className="space-y-2">
                   <label className={`block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px] font-sans ${isRtl ? "text-right" : "text-left"}`}>
-                    {t.urlLabel}
+                    {destinationType === "playstore"
+                      ? (lang === "he" ? "כתובת אפליקציה ב-Google Play *" : "Google Play App URL *")
+                      : destinationType === "appstore"
+                      ? (lang === "he" ? "כתובת אפליקציה ב-App Store *" : "App Store App URL *")
+                      : t.urlLabel}
                   </label>
                   <div className="relative">
                     <span className={`absolute inset-y-0 ${isRtl ? "right-3.5" : "left-3.5"} flex items-center pointer-events-none text-slate-400`}>
@@ -849,15 +1133,33 @@ export default function App() {
                     </span>
                     <input
                       type="url"
-                      placeholder={t.urlPlaceholder}
+                      placeholder={
+                        destinationType === "playstore"
+                          ? "https://play.google.com/store/apps/details?id=com.example.app"
+                          : destinationType === "appstore"
+                          ? "https://apps.apple.com/app/id123456789"
+                          : t.urlPlaceholder
+                      }
                       required
                       value={baseUrl}
                       onChange={(e) => setBaseUrl(e.target.value)}
                       className={`w-full text-xs ${isRtl ? "pr-10 pl-3.5" : "pl-10 pr-3"} py-3 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all font-mono placeholder:text-slate-400`}
                     />
                   </div>
-                  {/* Real-time Validation Component */}
-                  <UrlValidator url={baseUrl} lang={lang} />
+                  {destinationType === "playstore" && (
+                    <p className={`text-[10px] text-slate-500 font-sans ${isRtl ? "text-right" : "text-left"}`}>
+                      {lang === "he" 
+                        ? "קישורי קמפיין של Google Play משתמשים בפרמטר 'referrer' כדי להעביר את נתוני ה-UTM בצורה מאובטחת להתקנות אפליקציה."
+                        : "Google Play Campaign URLs use the 'referrer' parameter to pass UTM campaign details securely during app install attribution."}
+                    </p>
+                  )}
+                  {destinationType === "appstore" && (
+                    <p className={`text-[10px] text-slate-500 font-sans ${isRtl ? "text-right" : "text-left"}`}>
+                      {lang === "he" 
+                        ? "קישורי קמפיין של iOS App Store תומכים במזהה מעקב של Apple (CT, PT) לצד פרמטרי UTM מסורתיים של Google Analytics."
+                        : "App Store campaign URLs support native Apple tracking parameters (CT, PT) alongside standard UTM parameters."}
+                    </p>
+                  )}
                 </div>
 
                 {/* Core Standard UTM Parameters Fields */}
@@ -967,6 +1269,84 @@ export default function App() {
                     />
                   </div>
                 </div>
+
+                {/* App Store Attribution Parameters (Apple Specific) */}
+                {destinationType === "appstore" && (
+                  <div className="border-t border-slate-100 pt-5 space-y-4 font-sans animate-fade-in">
+                    <div className={isRtl ? "text-right" : "text-left"}>
+                      <h4 className="text-xs font-bold text-blue-800 uppercase tracking-widest text-[10px]">
+                        {lang === "he" ? "פרמטרי מעקב של Apple App Store" : "Apple App Store Tracking Parameters"}
+                      </h4>
+                      <p className="text-[10px] text-slate-500">
+                        {lang === "he" 
+                          ? "ערכים אלו נדרשים כדי לעקוב אחר רכישות והורדות דרך המערכת הפנימית App Analytics של Apple."
+                          : "These variables are required to track campaign performance, downloads, and revenue inside Apple App Analytics."}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {/* Provider Token (pt) */}
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between items-center">
+                          <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                            {lang === "he" ? "מזהה ספק (PT) *" : "Provider Token (PT) *"}
+                          </label>
+                          <span className="text-[9px] text-[#64748B] font-mono">pt</span>
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="e.g. 123456"
+                          value={appStorePt}
+                          onChange={(e) => setAppStorePt(e.target.value)}
+                          className="w-full text-xs px-3 py-2.5 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
+                        />
+                        <p className="text-[9px] text-slate-400">
+                          {lang === "he" ? "מזהה ה-Provider הייחודי שלך ב-App Store Connect" : "Your unique iTunes Connect Provider ID"}
+                        </p>
+                      </div>
+
+                      {/* Media Type (mt) */}
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between items-center">
+                          <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                            {lang === "he" ? "סוג מדיה (MT)" : "Media Type (MT)"}
+                          </label>
+                          <span className="text-[9px] text-[#64748B] font-mono">mt</span>
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="8"
+                          value={appStoreMt}
+                          onChange={(e) => setAppStoreMt(e.target.value)}
+                          className="w-full text-xs px-3 py-2.5 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
+                        />
+                        <p className="text-[9px] text-slate-400">
+                          {lang === "he" ? "ערך מומלץ למשחקים ואפליקציות: 8" : "Recommended value for Apps & Games is 8"}
+                        </p>
+                      </div>
+
+                      {/* Affiliate Token (at) */}
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between items-center">
+                          <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                            {lang === "he" ? "מזהה שותף (AT)" : "Affiliate Token (AT)"}
+                          </label>
+                          <span className="text-[9px] text-[#64748B] font-mono">at</span>
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="e.g. 10l1234"
+                          value={appStoreAt}
+                          onChange={(e) => setAppStoreAt(e.target.value)}
+                          className="w-full text-xs px-3 py-2.5 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
+                        />
+                        <p className="text-[9px] text-slate-400">
+                          {lang === "he" ? "מזהה שותף אופציונלי לתוכניות שותפים של Apple" : "Optional Apple Affiliate Network token"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Custom Extra Parameters Accordion / Fields */}
                 <div className="border-t border-slate-100 pt-5 space-y-3 font-sans">
@@ -1386,6 +1766,7 @@ export default function App() {
               onDeleteLog={handleDeleteLog}
               onClearAll={handleClearAllHistory}
               lang={lang}
+              userId={currentUser?.uid}
             />
           </div>
         )}
@@ -1399,6 +1780,15 @@ export default function App() {
             &copy; {new Date().getFullYear()} Netolink. {t.allRightsReserved}
           </div>
           <div className="flex items-center gap-4 text-[11px] text-slate-400" dir="ltr">
+            <button
+              id="footer-legal-btn"
+              type="button"
+              onClick={() => setIsLegalOpen(true)}
+              className="hover:underline text-slate-500 hover:text-slate-800 font-bold transition-colors cursor-pointer"
+            >
+              {t.legalTermsLink}
+            </button>
+            <span>&bull;</span>
             <span>UTM Campaign Builder v1.1.0</span>
           </div>
         </div>
@@ -1423,6 +1813,13 @@ export default function App() {
             showTemporaryNotification("API credentials saved locally.");
           }
         }}
+      />
+
+      {/* Legal terms, privacy policy, cookie policy, accessibility modal */}
+      <LegalModal
+        isOpen={isLegalOpen}
+        onClose={() => setIsLegalOpen(false)}
+        lang={lang}
       />
 
       {/* Auth Error Modal */}

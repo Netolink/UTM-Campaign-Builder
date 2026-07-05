@@ -110,6 +110,7 @@ export interface TranslationDict {
   save: string;
   cancel: string;
   allRightsReserved: string;
+  legalTermsLink: string;
 
   // Real-time validation
   realTimeValidation: string;
@@ -255,6 +256,7 @@ export const translations: Record<Language, TranslationDict> = {
     save: "Save Settings",
     cancel: "Cancel",
     allRightsReserved: "All rights reserved.",
+    legalTermsLink: "Terms & Policies",
 
     // Real-time validation
     realTimeValidation: "Real-time Validation:",
@@ -264,7 +266,7 @@ export const translations: Record<Language, TranslationDict> = {
     forceRevalidate: "Force Re-validate",
     invalidUrlFormat: "Invalid URL format. Include http:// or https://",
     validationNetworkError: "URL is formatted correctly! However, live check failed due to a network or connection issue (the site might be offline or blocking external requests).",
-    validationStaticHost: "URL format is valid! (Live ping verification is skipped as the app is running as a static site without a backend).",
+    validationStaticHost: "URL format is valid! (Verified via browser-side connection check since there is no backend server).",
 
     // API Integration settings modal
     apiSettingsTitle: "API Integration Settings",
@@ -398,6 +400,7 @@ export const translations: Record<Language, TranslationDict> = {
     save: "שמור הגדרות",
     cancel: "ביטול",
     allRightsReserved: "כל הזכויות שמורות.",
+    legalTermsLink: "תנאי שימוש ומדיניות",
 
     // Real-time validation
     realTimeValidation: "אימות בזמן אמת:",
@@ -407,7 +410,7 @@ export const translations: Record<Language, TranslationDict> = {
     forceRevalidate: "אימות מחדש",
     invalidUrlFormat: "פורמט כתובת אתר לא תקין. יש לכלול http:// או https://",
     validationNetworkError: "פורמט הכתובת תקין לחלוטין! עם זאת, הבדיקה נכשלה עקב שגיאת חיבור או רשת (ייתכן שהאתר לא פעיל, חוסם פניות חיצוניות או שאין חיבור תקין לשרת הבדיקה).",
-    validationStaticHost: "פורמט הכתובת תקין! (בדיקת הזמינות דורשת שרת אחורי ואינה פעילה כאשר האפליקציה רצה כאתר סטטי ללא שרת).",
+    validationStaticHost: "פורמט הכתובת תקין! (אומת באמצעות בדיקת חיבור מהדפדפן מכיוון שהאתר רץ ללא שרת אחורי).",
 
     // API Integration settings modal
     apiSettingsTitle: "הגדרות אינטגרציה של API",
@@ -541,6 +544,7 @@ export const translations: Record<Language, TranslationDict> = {
     save: "Сохранить настройки",
     cancel: "Отмена",
     allRightsReserved: "Все права защищены.",
+    legalTermsLink: "Условия и конфиденциальность",
 
     // Real-time validation
     realTimeValidation: "Проверка в реальном времени:",
@@ -550,7 +554,7 @@ export const translations: Record<Language, TranslationDict> = {
     forceRevalidate: "Проверить повторно",
     invalidUrlFormat: "Неверный формат URL. Должен содержать http:// или https://",
     validationNetworkError: "Формат ссылки верен! Однако проверка доступности не удалась из-за сетевой ошибки или проблем с подключением (сайт может быть офлайн или блокировать запросы).",
-    validationStaticHost: "Формат ссылки верен! (Живая проверка пропущена, так как приложение работает как статический сайт без бэкенда).",
+    validationStaticHost: "Формат ссылки верен! (Проверено через браузерный запрос, так как приложение работает без бэкенда).",
 
     // API Integration settings modal
     apiSettingsTitle: "Настройки интеграции API",

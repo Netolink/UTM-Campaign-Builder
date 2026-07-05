@@ -75,7 +75,19 @@
             "fullUrl": "string",
             "shortUrl": "string",
             "shortenerService": "string",
-            "createdAt": "string"
+            "createdAt": "string",
+            "clicks": "number",
+            "clickDetails": {
+              "type": "array",
+              "items": {
+                "type": "map",
+                "properties": {
+                  "timestamp": "string",
+                  "userAgent": "string",
+                  "referrer": "string"
+                }
+              }
+            }
           }
         }
       }

@@ -14,6 +14,10 @@ export interface CampaignPreset {
   utmTerm: string;
   utmContent: string;
   utmId: string;
+  destinationType?: "website" | "playstore" | "appstore";
+  appStorePt?: string;
+  appStoreMt?: string;
+  appStoreAt?: string;
   customParams: CustomParameter[];
   createdAt: string;
 }
@@ -29,7 +33,17 @@ export interface UTMTemplate {
   utmTerm?: string;
   utmContent?: string;
   utmId?: string;
+  destinationType?: "website" | "playstore" | "appstore";
+  appStorePt?: string;
+  appStoreMt?: string;
+  appStoreAt?: string;
   customParams?: { key: string; value: string }[];
+}
+
+export interface ClickDetail {
+  timestamp: string;
+  userAgent: string;
+  referrer: string;
 }
 
 export interface HistoryLog {
@@ -40,6 +54,8 @@ export interface HistoryLog {
   shortUrl: string;
   shortenerService: "none" | "bitly" | "rebrandly" | "tinyurl" | "dub";
   createdAt: string;
+  clicks?: number;
+  clickDetails?: ClickDetail[];
 }
 
 export interface ShortenerSettings {
