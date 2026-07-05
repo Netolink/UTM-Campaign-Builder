@@ -124,7 +124,7 @@ export const legalTexts: Record<"en" | "he" | "ru", LegalTranslation> = {
         {
           title: "3. Contact & Feedback",
           content: [
-            "If you encounter any accessibility barriers while using this builder, please reach out to us at netolink.ltd@gmail.com, and we will do our best to address the issue promptly."
+            "If you encounter any accessibility barriers while using this builder, please reach out to us at contact@netolink.com, and we will do our best to address the issue promptly."
           ]
         }
       ],
@@ -233,7 +233,7 @@ export const legalTexts: Record<"en" | "he" | "ru", LegalTranslation> = {
         {
           title: "3. יצירת קשר ומשוב",
           content: [
-            "אם נתקלת בקושי כלשהו בנגישות בעת השימוש במחולל זה, נשמח אם תפנה אלינו לכתובת netolink.ltd@gmail.com כדי שנוכל לבחון ולשפר את הנושא בהקדם האפשרי."
+            "אם נתקלת בקושי כלשהו בנגישות בעת השימוש במחולל זה, נשמח אם תפנה אלינו לכתובת contact@netolink.com כדי שנוכל לבחון ולשפר את הנושא בהקדם האפשרי."
           ]
         }
       ],
@@ -340,7 +340,7 @@ export const legalTexts: Record<"en" | "he" | "ru", LegalTranslation> = {
         {
           title: "3. Обратная связь",
           content: [
-            "Если у вас возникли сложности с доступностью при использовании этого конструктора, пожалуйста, напишите нам по адресу netolink.ltd@gmail.com."
+            "Если у вас возникли сложности с доступностью при использовании этого конструктора, пожалуйста, напишите нам по адресу contact@netolink.com."
           ]
         }
       ],
