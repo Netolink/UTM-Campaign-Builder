@@ -282,6 +282,19 @@ export default function App() {
         }
       } else {
         setCurrentUser(null);
+        // Clear settings on sign out so no sensitive keys remain locally
+        localStorage.removeItem("utm_shortener_settings");
+        setSettings({
+          bitlyToken: "",
+          rebrandlyKey: "",
+          tinyurlToken: "",
+          dubToken: "",
+          bitlyDomain: "",
+          rebrandlyDomain: "",
+          tinyurlDomain: "",
+          dubDomain: "",
+        });
+
         // Fallback/load from localstorage for guest users
         const savedPresets = localStorage.getItem("utm_campaign_presets");
         setPresets(savedPresets ? JSON.parse(savedPresets) : []);
@@ -291,28 +304,6 @@ export default function App() {
 
         const savedLogs = localStorage.getItem("utm_campaign_history");
         setHistoryLogs(savedLogs ? JSON.parse(savedLogs) : []);
-
-        const savedSettings = localStorage.getItem("utm_shortener_settings");
-        const defaults = {
-          bitlyToken: "",
-          rebrandlyKey: "",
-          tinyurlToken: "",
-          dubToken: "",
-          bitlyDomain: "",
-          rebrandlyDomain: "",
-          tinyurlDomain: "",
-          dubDomain: "",
-        };
-        if (savedSettings) {
-          try {
-            const parsed = JSON.parse(savedSettings);
-            setSettings(decryptSettings({ ...defaults, ...parsed }));
-          } catch (e) {
-            setSettings(defaults);
-          }
-        } else {
-          setSettings(defaults);
-        }
       }
       setIsAuthLoading(false);
     });
@@ -403,11 +394,9 @@ export default function App() {
   }, [historyLogs, currentUser]);
 
   useEffect(() => {
-    if (!currentUser) {
-      const encrypted = encryptSettings(settings);
-      localStorage.setItem("utm_shortener_settings", JSON.stringify(encrypted));
-    }
-  }, [settings, currentUser]);
+    const encrypted = encryptSettings(settings);
+    localStorage.setItem("utm_shortener_settings", JSON.stringify(encrypted));
+  }, [settings]);
 
   // Reset shortened URL if the base assembled URL changes
   const fullAssembledUrl = useMemo(() => {

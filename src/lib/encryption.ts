@@ -2,51 +2,71 @@ import { ShortenerSettings } from "../types";
 
 const APP_SALT = "utm_builder_secure_salt_2026_@!";
 
-// Simple but effective synchronous encryption using a key-based cipher
-export function encrypt(text: string, secretKey: string = ""): string {
-  if (!text) return "";
-  // If text is already encrypted (starts with ENC:), do not re-encrypt
-  if (text.startsWith("ENC:")) return text;
-
-  const key = secretKey ? secretKey + APP_SALT : APP_SALT;
-  let result = "";
-  for (let i = 0; i < text.length; i++) {
-    const charCode = text.charCodeAt(i);
-    const keyChar = key.charCodeAt(i % key.length);
-    const encryptedChar = charCode ^ keyChar;
-    result += String.fromCharCode(encryptedChar);
-  }
-  // Convert to Base64 to make it safe for JSON storage and prefix with ENC:
+// Highly robust synchronous encryption using a clean byte-oriented XOR with TextEncoder/Decoder
+export function encrypt(text: any, secretKey: string = ""): string {
   try {
-    return "ENC:" + btoa(unescape(encodeURIComponent(result)));
+    if (text === null || text === undefined) return "";
+    const str = String(text);
+    if (!str) return "";
+    
+    // If text is already encrypted (starts with ENC:), do not re-encrypt
+    if (str.startsWith("ENC:")) return str;
+
+    const key = secretKey ? secretKey + APP_SALT : APP_SALT;
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(str);
+    const keyBytes = encoder.encode(key);
+
+    const encryptedBytes = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) {
+      encryptedBytes[i] = bytes[i] ^ keyBytes[i % keyBytes.length];
+    }
+
+    // Convert binary to safe Base64 string in a browser-safe way
+    let binary = "";
+    for (let i = 0; i < encryptedBytes.length; i++) {
+      binary += String.fromCharCode(encryptedBytes[i]);
+    }
+
+    return "ENC:" + btoa(binary);
   } catch (e) {
-    console.error("Base64 encryption encoding failed:", e);
-    return text;
+    console.error("Encryption failed, returning fallback:", e);
+    return String(text || "");
   }
 }
 
-export function decrypt(encodedText: string, secretKey: string = ""): string {
-  if (!encodedText) return "";
-  if (!encodedText.startsWith("ENC:")) {
-    // If not prefixed with ENC:, it is stored as plain-text (e.g. legacy/before encryption)
-    return encodedText;
-  }
-
-  const rawEncoded = encodedText.substring(4); // Remove "ENC:"
+export function decrypt(encodedText: any, secretKey: string = ""): string {
   try {
-    const key = secretKey ? secretKey + APP_SALT : APP_SALT;
-    const text = decodeURIComponent(escape(atob(rawEncoded)));
-    let result = "";
-    for (let i = 0; i < text.length; i++) {
-      const charCode = text.charCodeAt(i);
-      const keyChar = key.charCodeAt(i % key.length);
-      const decryptedChar = charCode ^ keyChar;
-      result += String.fromCharCode(decryptedChar);
+    if (encodedText === null || encodedText === undefined) return "";
+    const str = String(encodedText);
+    if (!str) return "";
+    
+    // If not prefixed with ENC:, it is stored as plain-text (legacy or before encryption)
+    if (!str.startsWith("ENC:")) {
+      return str;
     }
-    return result;
+
+    const rawEncoded = str.substring(4); // Remove "ENC:"
+    const binary = atob(rawEncoded);
+    const encryptedBytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      encryptedBytes[i] = binary.charCodeAt(i);
+    }
+
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+    const key = secretKey ? secretKey + APP_SALT : APP_SALT;
+    const keyBytes = encoder.encode(key);
+
+    const bytes = new Uint8Array(encryptedBytes.length);
+    for (let i = 0; i < encryptedBytes.length; i++) {
+      bytes[i] = encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
+    }
+
+    return decoder.decode(bytes);
   } catch (e) {
-    console.error("Decryption failed:", e);
-    return ""; // Return empty string if decryption fails
+    console.error("Decryption failed, returning empty string fallback:", e);
+    return "";
   }
 }
 
@@ -54,6 +74,18 @@ export function decrypt(encodedText: string, secretKey: string = ""): string {
  * Encrypt the sensitive fields of ShortenerSettings
  */
 export function encryptSettings(settings: ShortenerSettings, userId: string = ""): ShortenerSettings {
+  if (!settings) {
+    return {
+      bitlyToken: "",
+      rebrandlyKey: "",
+      tinyurlToken: "",
+      dubToken: "",
+      bitlyDomain: "",
+      rebrandlyDomain: "",
+      tinyurlDomain: "",
+      dubDomain: "",
+    };
+  }
   return {
     ...settings,
     bitlyToken: encrypt(settings.bitlyToken, userId),
@@ -67,6 +99,18 @@ export function encryptSettings(settings: ShortenerSettings, userId: string = ""
  * Decrypt the sensitive fields of ShortenerSettings
  */
 export function decryptSettings(settings: ShortenerSettings, userId: string = ""): ShortenerSettings {
+  if (!settings) {
+    return {
+      bitlyToken: "",
+      rebrandlyKey: "",
+      tinyurlToken: "",
+      dubToken: "",
+      bitlyDomain: "",
+      rebrandlyDomain: "",
+      tinyurlDomain: "",
+      dubDomain: "",
+    };
+  }
   return {
     ...settings,
     bitlyToken: decrypt(settings.bitlyToken, userId),
