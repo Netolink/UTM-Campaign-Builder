@@ -25,22 +25,23 @@ import localFirebaseConfig from "../../firebase-applet-config.json";
 const isCustomProject = !!import.meta.env.VITE_FIREBASE_PROJECT_ID && import.meta.env.VITE_FIREBASE_PROJECT_ID !== localFirebaseConfig.projectId;
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || localFirebaseConfig.apiKey,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || localFirebaseConfig.authDomain,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || localFirebaseConfig.projectId,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || localFirebaseConfig.storageBucket,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || localFirebaseConfig.messagingSenderId,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || localFirebaseConfig.appId,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || localFirebaseConfig.apiKey || "dummy-api-key-for-local-development",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || localFirebaseConfig.authDomain || "dummy-project-id.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || localFirebaseConfig.projectId || "dummy-project-id",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || localFirebaseConfig.storageBucket || "dummy-project-id.appspot.com",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || localFirebaseConfig.messagingSenderId || "1234567890",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || localFirebaseConfig.appId || "1:1234567890:web:abcdef123456",
   firestoreDatabaseId: isCustomProject 
     ? (import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || undefined)
-    : (import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || localFirebaseConfig.firestoreDatabaseId),
+    : (import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || (localFirebaseConfig as any).firestoreDatabaseId || undefined),
 };
 
 // Check if we are running with dummy/placeholder config (e.g., when built on GitHub without custom secrets)
 export const isUsingDummyConfig = 
   !firebaseConfig.apiKey || 
   firebaseConfig.apiKey.includes("dummy") || 
-  firebaseConfig.projectId.includes("dummy");
+  firebaseConfig.projectId.includes("dummy") ||
+  firebaseConfig.apiKey === "";
 
 // Initialize Firebase App
 const app = initializeApp(firebaseConfig);

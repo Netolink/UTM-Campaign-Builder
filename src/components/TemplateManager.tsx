@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Search, Plus, Trash2, Tag, Copy, Sparkles, FolderHeart } from "lucide-react";
 import { UTMTemplate } from "../types";
 import { BUILT_IN_TEMPLATES } from "../constants";
+import { translations, Language } from "../translations";
 
 interface TemplateManagerProps {
   customTemplates: UTMTemplate[];
@@ -9,7 +10,7 @@ interface TemplateManagerProps {
   onSaveCurrentAsTemplate: (name: string, description: string) => void;
   onDeleteCustomTemplate: (id: string) => void;
   currentActiveId?: string;
-  lang?: string;
+  lang?: Language;
 }
 
 export default function TemplateManager({
@@ -25,11 +26,13 @@ export default function TemplateManager({
   const [newTemplateName, setNewTemplateName] = useState("");
   const [newTemplateDesc, setNewTemplateDesc] = useState("");
 
+  const t = translations[lang];
+
   const allTemplates = [...BUILT_IN_TEMPLATES, ...customTemplates];
   const filteredTemplates = allTemplates.filter(
-    (t) =>
-      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (t.description && t.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    (tpl) =>
+      tpl.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (tpl.description && tpl.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const handleSave = (e: React.FormEvent) => {
@@ -48,9 +51,9 @@ export default function TemplateManager({
         <div>
           <h3 className="text-sm font-bold text-[#191c1e] flex items-center gap-1.5 font-display">
             <Tag className="w-4 h-4 text-slate-500" />
-            Parameter Templates
+            {t.tplTitle}
           </h3>
-          <p className="text-[11px] text-[#64748B] font-sans">Select standard channels or custom tracking blueprints</p>
+          <p className="text-[11px] text-[#64748B] font-sans">{t.tplDesc}</p>
         </div>
         <button
           type="button"
@@ -58,7 +61,7 @@ export default function TemplateManager({
           className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold bg-[#e2e8f0] hover:bg-slate-200 text-slate-800 rounded-[4px] transition-all shrink-0 self-start sm:self-auto cursor-pointer font-sans"
         >
           <Plus className="w-3.5 h-3.5" />
-          Save Current Config
+          {t.tplSaveCurrentBtn}
         </button>
       </div>
 
@@ -71,22 +74,22 @@ export default function TemplateManager({
           <div className="flex justify-between items-center">
             <h4 className="text-xs font-bold text-[#3B82F6] flex items-center gap-1 font-display">
               <Sparkles className="w-3.5 h-3.5 text-[#3B82F6]" />
-              Save Setup as Custom Template
+              {t.tplSaveAsCustomTitle}
             </h4>
             <button
               type="button"
               onClick={() => setShowSaveForm(false)}
               className="text-[10px] text-[#64748B] hover:text-[#191c1e] cursor-pointer"
             >
-              Cancel
+              {lang === "he" ? "ביטול" : lang === "ru" ? "Отмена" : "Cancel"}
             </button>
           </div>
           <div className="grid grid-cols-1 gap-2.5">
             <div>
-              <label className="block text-[10px] font-semibold text-[#64748B] mb-0.5 uppercase tracking-wider font-sans">Template Name</label>
+              <label className="block text-[10px] font-semibold text-[#64748B] mb-0.5 uppercase tracking-wider font-sans">{t.tplNameLabel}</label>
               <input
                 type="text"
-                placeholder="e.g. Q3 Affiliate Campaign"
+                placeholder={lang === "he" ? "לדוגמה: קמפיין שותפים רבעוני" : lang === "ru" ? "например: Партнерская кампания Q3" : "e.g. Q3 Affiliate Campaign"}
                 required
                 value={newTemplateName}
                 onChange={(e) => setNewTemplateName(e.target.value)}
@@ -94,10 +97,10 @@ export default function TemplateManager({
               />
             </div>
             <div>
-              <label className="block text-[10px] font-semibold text-[#64748B] mb-0.5 uppercase tracking-wider font-sans">Description (Optional)</label>
+              <label className="block text-[10px] font-semibold text-[#64748B] mb-0.5 uppercase tracking-wider font-sans">{t.tplDescLabel}</label>
               <input
                 type="text"
-                placeholder="Brief tracking description..."
+                placeholder={lang === "he" ? "תיאור קצר למעקב..." : lang === "ru" ? "Краткое описание..." : "Brief tracking description..."}
                 value={newTemplateDesc}
                 onChange={(e) => setNewTemplateDesc(e.target.value)}
                 className="w-full text-xs px-2.5 py-1.5 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none font-sans"
@@ -108,7 +111,7 @@ export default function TemplateManager({
             type="submit"
             className="w-full py-1.5 text-xs font-semibold text-white bg-[#3B82F6] hover:bg-blue-600 rounded-[4px] transition-colors cursor-pointer"
           >
-            Create Custom Template
+            {t.tplCreateBtn}
           </button>
         </form>
       )}
@@ -120,7 +123,7 @@ export default function TemplateManager({
         </span>
         <input
           type="text"
-          placeholder="Search templates..."
+          placeholder={t.tplSearchPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full text-xs pl-8 pr-3 py-1.5 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none transition-all font-sans"
@@ -152,7 +155,7 @@ export default function TemplateManager({
                         isActive ? "bg-slate-800 text-slate-300" : "bg-slate-50 text-[#64748B]"
                       }`}
                     >
-                      Official
+                      {t.tplOfficialBadge}
                     </span>
                   ) : (
                     <span
@@ -161,7 +164,7 @@ export default function TemplateManager({
                       }`}
                     >
                       <FolderHeart className="w-2.5 h-2.5" />
-                      Custom
+                      {t.tplCustomBadge}
                     </span>
                   )}
                 </div>
@@ -171,7 +174,7 @@ export default function TemplateManager({
                     isActive ? "text-slate-300" : "text-[#64748B]"
                   }`}
                 >
-                  {tpl.description || "Custom tracking templates."}
+                  {tpl.description || t.tplDefaultDesc}
                 </p>
 
                 {/* Badges preview */}
@@ -197,7 +200,7 @@ export default function TemplateManager({
                       onDeleteCustomTemplate(tpl.id);
                     }}
                     className="absolute bottom-2.5 right-2.5 opacity-0 group-hover:opacity-100 p-1 rounded-[4px] hover:bg-red-50 text-slate-400 hover:text-red-600 transition-all cursor-pointer"
-                    title="Delete Custom Template"
+                    title={t.tplDeleteTooltip}
                   >
                     <Trash2 className="w-3 h-3" />
                   </button>
@@ -207,7 +210,7 @@ export default function TemplateManager({
           })
         ) : (
           <div className="col-span-2 py-6 text-center text-xs text-[#64748B] border border-dashed border-[#e2e8f0] rounded-[8px] bg-white font-sans">
-            No templates matching "{searchQuery}"
+            {t.tplNoMatches.replace("{query}", searchQuery)}
           </div>
         )}
       </div>

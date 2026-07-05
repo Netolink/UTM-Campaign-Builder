@@ -210,9 +210,9 @@ export default function BatchCreator({
         const newRows = parseCSVContent(text);
         if (newRows.length > 0) {
           setRows([...rows, ...newRows]);
-          showNotification(`Successfully imported ${newRows.length} URLs!`);
+          showNotification(t.batchNotificationImportSuccess.replace("{count}", String(newRows.length)));
         } else {
-          showNotification("Could not parse any valid URLs from the file.");
+          showNotification(t.batchNotificationImportFail);
         }
       }
     };
@@ -241,9 +241,9 @@ export default function BatchCreator({
         const newRows = parseCSVContent(text);
         if (newRows.length > 0) {
           setRows([...rows, ...newRows]);
-          showNotification(`Successfully imported ${newRows.length} URLs!`);
+          showNotification(t.batchNotificationImportSuccess.replace("{count}", String(newRows.length)));
         } else {
-          showNotification("Could not parse any valid URLs from the file.");
+          showNotification(t.batchNotificationImportFail);
         }
       }
     };
@@ -256,9 +256,9 @@ export default function BatchCreator({
     if (newRows.length > 0) {
       setRows([...rows, ...newRows]);
       setPasteText("");
-      showNotification(`Added ${newRows.length} URLs to the table.`);
+      showNotification(t.batchNotificationAppendSuccess.replace("{count}", String(newRows.length)));
     } else {
-      showNotification("No valid URLs found in paste input.");
+      showNotification(t.batchNotificationNoUrls);
     }
   };
 
@@ -295,15 +295,15 @@ export default function BatchCreator({
   };
 
   const handleClearAll = () => {
-    if (window.confirm("Are you sure you want to clear all batch rows?")) {
+    if (window.confirm(t.batchConfirmClear)) {
       setRows([]);
-      showNotification("Cleared all batch entries.");
+      showNotification(t.batchNotificationClearSuccess);
     }
   };
 
   const handleApplyGlobalUTMs = (overwriteAll: boolean) => {
     if (rows.length === 0) {
-      showNotification("No rows to apply UTM parameters to. Add rows first.");
+      showNotification(lang === "he" ? "אין שורות להחלת פרמטרים. הוסף שורות תחילה." : lang === "ru" ? "Нет строк для применения параметров. Сначала добавьте строки." : "No rows to apply UTM parameters to. Add rows first.");
       return;
     }
     setRows(
@@ -322,8 +322,8 @@ export default function BatchCreator({
     );
     showNotification(
       overwriteAll
-        ? "Applied global UTM parameters to all rows!"
-        : "Filled missing parameters with global values."
+        ? t.batchNotificationApplySuccess
+        : t.batchNotificationApplyMissing
     );
   };
 
@@ -398,7 +398,7 @@ export default function BatchCreator({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    showNotification("Batch export CSV downloaded.");
+    showNotification(lang === "he" ? "קובץ ייצוא קבוצתי של CSV הורד." : lang === "ru" ? "Файл экспорта CSV скачан." : "Batch export CSV downloaded.");
   };
 
   // Copy all links
@@ -407,11 +407,11 @@ export default function BatchCreator({
       .map((r) => (type === "short" && r.shortenedUrl ? r.shortenedUrl : compileUrl(r)))
       .filter(Boolean);
     if (list.length === 0) {
-      showNotification("No compiled URLs to copy.");
+      showNotification(t.batchNotificationNoCompiled);
       return;
     }
     navigator.clipboard.writeText(list.join("\n"));
-    showNotification(`Copied ${list.length} links to clipboard!`);
+    showNotification(t.batchNotificationCopySuccess.replace("{count}", String(list.length)));
   };
 
   // Single Row Link Shortening
@@ -421,12 +421,12 @@ export default function BatchCreator({
 
     const compiledUrl = compileUrl(row);
     if (!compiledUrl) {
-      showNotification("Invalid Base URL for compile.");
+      showNotification(lang === "he" ? "כתובת אתר יעד לא תקינה לעיבוד." : lang === "ru" ? "Неверный базовый URL для компиляции." : "Invalid Base URL for compile.");
       return;
     }
 
     if (shortenerService === "none") {
-      showNotification("Select an API Integration service first.");
+      showNotification(t.batchNotificationConfigureService);
       return;
     }
 
@@ -455,16 +455,16 @@ export default function BatchCreator({
           r.id === rowId ? { ...r, shortenedUrl: data.shortUrl, isShortening: false } : r
         )
       );
-      showNotification("URL shortened successfully!");
+      showNotification(t.batchNotificationShortenSuccess);
     } catch (err: any) {
       setRows((current) =>
         current.map((r) =>
           r.id === rowId
-            ? { ...r, isShortening: false, error: err.message || "Shortener error" }
+            ? { ...r, isShortening: false, error: err.message || t.batchNotificationShortenFail }
             : r
         )
       );
-      showNotification(err.message || "Shortening service failure.");
+      showNotification(err.message || t.batchNotificationShortenFail);
     }
   };
 
@@ -472,17 +472,17 @@ export default function BatchCreator({
   const handleBulkShorten = async () => {
     const unshortened = rows.filter((r) => !r.shortenedUrl && compileUrl(r));
     if (unshortened.length === 0) {
-      showNotification("All valid rows are already shortened or empty.");
+      showNotification(t.batchNotificationBatchEmpty);
       return;
     }
 
     if (shortenerService === "none") {
-      showNotification("Please configure and select a Shortening Service in top-right menu.");
+      showNotification(t.batchNotificationConfigureService);
       return;
     }
 
     setBulkShortening(true);
-    showNotification(`Starting batch shortening for ${unshortened.length} links...`);
+    showNotification(t.batchNotificationBatchStart.replace("{count}", String(unshortened.length)));
 
     // Process rows sequentially or with tiny delays to respect API rate limits
     for (const row of unshortened) {
@@ -518,14 +518,14 @@ export default function BatchCreator({
     }
 
     setBulkShortening(false);
-    showNotification("Batch shortening operation complete!");
+    showNotification(t.batchNotificationBatchComplete);
   };
 
   // Send all configured links to Campaign History log
   const handleBulkAddToHistory = () => {
     const validRows = rows.filter((r) => compileUrl(r));
     if (validRows.length === 0) {
-      showNotification("No compiled links to archive.");
+      showNotification(t.batchNotificationNoArchive);
       return;
     }
 
@@ -533,7 +533,7 @@ export default function BatchCreator({
       const compiled = compileUrl(r);
       return {
         id: Math.random().toString(36).substring(2, 9),
-        campaignName: r.utmCampaign.trim() || "Batch Campaign",
+        campaignName: r.utmCampaign.trim() || (lang === "he" ? "קמפיין קבוצתי" : lang === "ru" ? "Пакетная кампания" : "Batch Campaign"),
         baseUrl: r.baseUrl,
         fullUrl: compiled,
         shortUrl: r.shortenedUrl || compiled,
@@ -543,7 +543,7 @@ export default function BatchCreator({
     });
 
     onAddHistoryLogs(newLogs);
-    showNotification(`Archived ${newLogs.length} links to the history log!`);
+    showNotification(t.batchNotificationArchiveSuccess.replace("{count}", String(newLogs.length)));
   };
 
   return (
@@ -556,10 +556,10 @@ export default function BatchCreator({
           <div>
             <h3 className="text-xs font-bold text-[#191c1e] uppercase tracking-widest flex items-center gap-1.5 font-display">
               <UploadCloud className="w-4 h-4 text-slate-500" />
-              Import Base URL List
+              {t.batchImportTitle}
             </h3>
             <p className="text-[11px] text-[#64748B] mt-0.5 font-sans">
-              Upload a TXT/CSV file or paste newline-separated destination links
+              {t.batchImportDesc}
             </p>
           </div>
 
@@ -578,10 +578,10 @@ export default function BatchCreator({
             <UploadCloud className={`w-8 h-8 transition-transform ${isDragging ? "scale-110 text-[#3B82F6]" : "text-slate-300"}`} />
             <div className="font-sans">
               <span className="text-xs font-bold text-slate-700 block">
-                Drag & Drop files here
+                {t.batchDragDropTitle}
               </span>
               <span className="text-[10px] text-[#64748B] block mt-0.5">
-                or click to browse from system (.csv or .txt)
+                {t.batchDragDropDesc}
               </span>
             </div>
             <input
@@ -596,7 +596,7 @@ export default function BatchCreator({
           <div className="relative flex py-1 items-center">
             <div className="flex-grow border-t border-slate-100"></div>
             <span className="flex-shrink mx-3 text-[10px] font-bold text-slate-300 uppercase tracking-widest font-sans">
-              or paste manually
+              {t.batchOrPasteManually}
             </span>
             <div className="flex-grow border-t border-slate-100"></div>
           </div>
@@ -615,7 +615,7 @@ export default function BatchCreator({
               disabled={!pasteText.trim()}
               className="w-full py-2 bg-[#191c1e] text-white rounded-[4px] text-xs font-bold hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
-              Parse URLs & Append
+              {t.batchParseAppend}
             </button>
           </div>
         </div>
@@ -626,10 +626,10 @@ export default function BatchCreator({
             <div>
               <h3 className="text-xs font-bold text-[#191c1e] uppercase tracking-widest flex items-center gap-1.5 font-display">
                 <Sparkles className="w-4 h-4 text-slate-500" />
-                Global / Bulk UTM Builder Config
+                {t.batchGlobalConfigTitle}
               </h3>
               <p className="text-[11px] text-[#64748B] mt-0.5 font-sans">
-                Configure common tracking tags to apply instantly or fill empty cells in your list
+                {t.batchGlobalConfigDesc}
               </p>
             </div>
 
@@ -637,7 +637,7 @@ export default function BatchCreator({
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
-                  Source
+                  {t.sourceLabel}
                 </label>
                 <input
                   type="text"
@@ -650,7 +650,7 @@ export default function BatchCreator({
 
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
-                  Medium
+                  {t.mediumLabel}
                 </label>
                 <input
                   type="text"
@@ -663,7 +663,7 @@ export default function BatchCreator({
 
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
-                  Campaign Name
+                  {t.campaignLabel}
                 </label>
                 <input
                   type="text"
@@ -676,7 +676,7 @@ export default function BatchCreator({
 
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
-                  Term (Keyword)
+                  {t.termLabel}
                 </label>
                 <input
                   type="text"
@@ -689,7 +689,7 @@ export default function BatchCreator({
 
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
-                  Content (Ad Variation)
+                  {t.contentLabel}
                 </label>
                 <input
                   type="text"
@@ -702,7 +702,7 @@ export default function BatchCreator({
 
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest font-sans">
-                  Campaign ID
+                  {t.idLabel}
                 </label>
                 <input
                   type="text"
@@ -721,14 +721,14 @@ export default function BatchCreator({
               className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-50 hover:bg-slate-100 text-[#191c1e] text-xs font-semibold rounded-[4px] border border-[#e2e8f0] transition-colors cursor-pointer font-sans"
               title="Apply global values to blank fields only"
             >
-              Fill Empty Row Fields
+              {t.batchFillEmpty}
             </button>
             <button
               onClick={() => handleApplyGlobalUTMs(true)}
               className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 bg-[#191c1e] text-white text-xs font-bold rounded-[4px] hover:bg-black transition-colors cursor-pointer font-sans"
               title="Overwrite parameters on all existing rows"
             >
-              Overwrite All Row Parameters
+              {t.batchOverwriteAll}
             </button>
             <button
               onClick={handleClearAll}
@@ -736,7 +736,7 @@ export default function BatchCreator({
               className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 text-red-600 hover:bg-red-50 text-xs font-semibold rounded-[4px] transition-colors disabled:opacity-40 cursor-pointer sm:ml-auto font-sans"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              Clear Current List
+              {lang === "he" ? "נקה רשימה נוכחית" : lang === "ru" ? "Очистить текущий список" : "Clear Current List"}
             </button>
           </div>
         </div>
@@ -749,13 +749,13 @@ export default function BatchCreator({
           <div>
             <h3 className="text-sm font-bold text-[#191c1e] flex items-center gap-1.5 font-display">
               <Layers className="w-4 h-4 text-slate-500" />
-              Batch URL Builder Ledger
+              {t.batchLedgerTitle}
               <span className="px-1.5 py-0.5 text-[10px] bg-slate-100 text-slate-600 rounded-full font-bold">
-                {rows.length} rows
+                {rows.length} {lang === "he" ? "שורות" : lang === "ru" ? "строк" : "rows"}
               </span>
             </h3>
             <p className="text-[11px] text-[#64748B] font-sans">
-              Review, edit, and bulk-process campaign links in real-time
+              {t.batchLedgerDesc}
             </p>
           </div>
 
@@ -773,7 +773,7 @@ export default function BatchCreator({
                   ) : (
                     <Sparkles className="w-3.5 h-3.5" />
                   )}
-                  Bulk Shorten
+                  {t.batchBulkShorten}
                 </button>
                 <button
                   onClick={() => copyAllLinks("full")}
@@ -781,7 +781,7 @@ export default function BatchCreator({
                   title="Copy all assembled URLs to clipboard"
                 >
                   <Copy className="w-3.5 h-3.5" />
-                  Copy UTMs
+                  {t.batchCopyUtms}
                 </button>
                 <button
                   onClick={handleBulkAddToHistory}
@@ -789,7 +789,7 @@ export default function BatchCreator({
                   title="Persist all compiled rows to general history log"
                 >
                   <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
-                  Log to History
+                  {t.batchLogHistory}
                 </button>
                 <button
                   onClick={exportBatchToCSV}
@@ -797,7 +797,7 @@ export default function BatchCreator({
                   title="Export grid data to CSV file"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  Download CSV
+                  {t.batchDownloadCsv}
                 </button>
               </>
             )}
@@ -806,7 +806,7 @@ export default function BatchCreator({
               className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#3B82F6] text-xs font-bold rounded-[4px] border border-blue-100 transition-colors ml-auto sm:ml-0 cursor-pointer font-sans"
             >
               <Plus className="w-3.5 h-3.5" />
-              Add Row
+              {lang === "he" ? "הוסף שורה" : lang === "ru" ? "Добавить строку" : "Add Row"}
             </button>
           </div>
         </div>
@@ -816,13 +816,13 @@ export default function BatchCreator({
           <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
               <tr className="bg-slate-50/80 border-b border-[#e2e8f0] text-[10px] text-[#64748B] font-bold uppercase tracking-widest font-sans">
-                <th className="px-3 py-3 w-[22%]">Website Destination Base URL</th>
-                <th className="px-3 py-3 w-[10%]">Source</th>
-                <th className="px-3 py-3 w-[10%]">Medium</th>
-                <th className="px-3 py-3 w-[12%]">Campaign</th>
-                <th className="px-3 py-3 w-[28%]">Compiled Outputs</th>
-                <th className="px-3 py-3 w-[8%] text-center">QR Code</th>
-                <th className="px-3 py-3 w-[10%] text-right">Actions</th>
+                <th className="px-3 py-3 w-[22%]">{t.batchTableHeaderUrl}</th>
+                <th className="px-3 py-3 w-[10%]">{t.batchTableHeaderSource}</th>
+                <th className="px-3 py-3 w-[10%]">{t.batchTableHeaderMedium}</th>
+                <th className="px-3 py-3 w-[12%]">{t.batchTableHeaderCampaign}</th>
+                <th className="px-3 py-3 w-[28%]">{t.batchTableHeaderOutput}</th>
+                <th className="px-3 py-3 w-[8%] text-center">{t.batchTableHeaderQr}</th>
+                <th className="px-3 py-3 w-[10%] text-right">{t.batchTableHeaderActions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-xs text-slate-700">
@@ -930,7 +930,7 @@ export default function BatchCreator({
                             </div>
                           </div>
                         ) : (
-                          <span className="text-[10px] text-slate-300 italic font-sans">Waiting for URL...</span>
+                          <span className="text-[10px] text-slate-300 italic font-sans">{t.batchWaitingUrl}</span>
                         )}
 
                         {row.error && (
@@ -988,14 +988,14 @@ export default function BatchCreator({
                                   className="w-full flex items-center justify-center gap-1.5 py-1 bg-blue-50 hover:bg-blue-100 text-[#3B82F6] rounded-[4px] text-[10px] font-bold transition-colors cursor-pointer"
                                 >
                                   <Download className="w-3 h-3" />
-                                  Download
+                                  {lang === "he" ? "הורדה" : lang === "ru" ? "Скачать" : "Download"}
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => setActiveQrRow(null)}
                                   className="text-[9px] text-[#64748B] hover:text-[#191c1e] underline font-bold cursor-pointer font-sans"
                                 >
-                                  Close
+                                  {lang === "he" ? "סגור" : lang === "ru" ? "Закрыть" : "Close"}
                                 </button>
                               </div>
                             )}
@@ -1018,7 +1018,7 @@ export default function BatchCreator({
                               {row.isShortening ? (
                                 <Loader2 className="w-3 h-3 animate-spin" />
                               ) : (
-                                "Shorten"
+                                t.batchShortenAction
                               )}
                             </button>
                           )}
@@ -1040,17 +1040,17 @@ export default function BatchCreator({
                     <div className="flex flex-col items-center justify-center gap-2 font-sans">
                       <Layers className="w-8 h-8 text-slate-200" />
                       <span className="font-bold text-xs text-[#191c1e]">
-                        No batch entries loaded
+                        {lang === "he" ? "לא נטענו רשומות בקבוצה" : lang === "ru" ? "Пакетные записи не загружены" : "No batch entries loaded"}
                       </span>
                       <span className="text-[10px] text-[#64748B] max-w-sm mx-auto">
-                        Paste a list of URLs, import a CSV, or click "Add Row" to begin creating links in bulk.
+                        {lang === "he" ? "הדבק רשימת קישורים, ייבא קובץ CSV או לחץ על 'הוסף שורה' כדי להתחיל ביצירה המונית." : lang === "ru" ? "Вставьте список URL, импортируйте CSV или нажмите «Добавить строку», чтобы начать пакетную генерацию." : "Paste a list of URLs, import a CSV, or click \"Add Row\" to begin creating links in bulk."}
                       </span>
                       <button
                         onClick={handleAddManualRow}
                         className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-[#191c1e] text-white rounded-[4px] text-xs font-bold hover:bg-black transition-colors cursor-pointer"
                       >
                         <Plus className="w-3.5 h-3.5" />
-                        Add First Row
+                        {lang === "he" ? "הוסף שורה ראשונה" : lang === "ru" ? "Добавить первую строку" : "Add First Row"}
                       </button>
                     </div>
                   </td>

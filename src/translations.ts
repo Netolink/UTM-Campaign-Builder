@@ -143,6 +143,76 @@ export interface TranslationDict {
   tinyurlFallbackNote: string;
   settingsSavedBtn: string;
   saveConfigBtn: string;
+
+  // Batch Creator & Templates/Presets Translation Additions
+  batchImportTitle: string;
+  batchImportDesc: string;
+  batchDragDropTitle: string;
+  batchDragDropDesc: string;
+  batchOrPasteManually: string;
+  batchParseAppend: string;
+  batchGlobalConfigTitle: string;
+  batchGlobalConfigDesc: string;
+  batchFillEmpty: string;
+  batchOverwriteAll: string;
+  batchLedgerTitle: string;
+  batchLedgerDesc: string;
+  batchBulkShorten: string;
+  batchCopyUtms: string;
+  batchLogHistory: string;
+  batchDownloadCsv: string;
+  batchTableHeaderUrl: string;
+  batchTableHeaderSource: string;
+  batchTableHeaderMedium: string;
+  batchTableHeaderCampaign: string;
+  batchTableHeaderOutput: string;
+  batchTableHeaderQr: string;
+  batchTableHeaderActions: string;
+  batchWaitingUrl: string;
+  batchShortenAction: string;
+  batchConfirmClear: string;
+  batchNotificationImportSuccess: string;
+  batchNotificationImportFail: string;
+  batchNotificationAppendSuccess: string;
+  batchNotificationNoUrls: string;
+  batchNotificationApplySuccess: string;
+  batchNotificationApplyMissing: string;
+  batchNotificationClearSuccess: string;
+  batchNotificationNoCompiled: string;
+  batchNotificationCopySuccess: string;
+  batchNotificationShortenSuccess: string;
+  batchNotificationShortenFail: string;
+  batchNotificationBatchStart: string;
+  batchNotificationBatchEmpty: string;
+  batchNotificationConfigureService: string;
+  batchNotificationBatchComplete: string;
+  batchNotificationNoArchive: string;
+  batchNotificationArchiveSuccess: string;
+
+  tplTitle: string;
+  tplDesc: string;
+  tplSaveCurrentBtn: string;
+  tplSaveAsCustomTitle: string;
+  tplNameLabel: string;
+  tplDescLabel: string;
+  tplCreateBtn: string;
+  tplSearchPlaceholder: string;
+  tplNoMatches: string;
+  tplOfficialBadge: string;
+  tplCustomBadge: string;
+  tplDefaultDesc: string;
+  tplDeleteTooltip: string;
+
+  presetTitle: string;
+  presetDesc: string;
+  presetInputPlaceholder: string;
+  presetSaveBtn: string;
+  presetSavedBtn: string;
+  presetSearchPlaceholder: string;
+  presetActiveBadge: string;
+  presetLoadBadge: string;
+  presetDeleteTooltip: string;
+  presetNoPresets: string;
 }
 
 export const translations: Record<Language, TranslationDict> = {
@@ -288,7 +358,77 @@ export const translations: Record<Language, TranslationDict> = {
     brandedDomainLabel: "Branded Domain (Optional)",
     tinyurlFallbackNote: "* Note: If TinyURL Token is left empty, the application will automatically fallback to TinyURL's free anonymous API for shortening!",
     settingsSavedBtn: "Settings Saved!",
-    saveConfigBtn: "Save Configuration"
+    saveConfigBtn: "Save Configuration",
+
+    // Batch Creator & Templates/Presets English Translation
+    batchImportTitle: "Import Base URL List",
+    batchImportDesc: "Upload a TXT/CSV file or paste newline-separated destination links",
+    batchDragDropTitle: "Drag & Drop files here",
+    batchDragDropDesc: "or click to browse from system (.csv or .txt)",
+    batchOrPasteManually: "or paste manually",
+    batchParseAppend: "Parse URLs & Append",
+    batchGlobalConfigTitle: "Global / Bulk UTM Builder Config",
+    batchGlobalConfigDesc: "Configure common tracking tags to apply instantly or fill empty cells in your list",
+    batchFillEmpty: "Fill Empty Row Fields",
+    batchOverwriteAll: "Overwrite All Row Parameters",
+    batchLedgerTitle: "Batch URL Builder Ledger",
+    batchLedgerDesc: "Review, edit, and bulk-process campaign links in real-time",
+    batchBulkShorten: "Bulk Shorten",
+    batchCopyUtms: "Copy UTMs",
+    batchLogHistory: "Log to History",
+    batchDownloadCsv: "Download CSV",
+    batchTableHeaderUrl: "Website Destination Base URL",
+    batchTableHeaderSource: "Source",
+    batchTableHeaderMedium: "Medium",
+    batchTableHeaderCampaign: "Campaign",
+    batchTableHeaderOutput: "Compiled Outputs",
+    batchTableHeaderQr: "QR Code",
+    batchTableHeaderActions: "Actions",
+    batchWaitingUrl: "Waiting for URL...",
+    batchShortenAction: "Shorten",
+    batchConfirmClear: "Are you sure you want to clear all batch rows?",
+    batchNotificationImportSuccess: "Successfully imported {count} URLs!",
+    batchNotificationImportFail: "Could not parse any valid URLs from the file.",
+    batchNotificationAppendSuccess: "Added {count} URLs to the table.",
+    batchNotificationNoUrls: "No valid URLs found in paste input.",
+    batchNotificationApplySuccess: "Applied global UTM parameters to all rows!",
+    batchNotificationApplyMissing: "Filled missing parameters with global values.",
+    batchNotificationClearSuccess: "Cleared all batch entries.",
+    batchNotificationNoCompiled: "No compiled URLs to copy.",
+    batchNotificationCopySuccess: "Copied {count} links to clipboard!",
+    batchNotificationShortenSuccess: "URL shortened successfully!",
+    batchNotificationShortenFail: "Shortening service failure.",
+    batchNotificationBatchStart: "Starting batch shortening for {count} links...",
+    batchNotificationBatchEmpty: "All valid rows are already shortened or empty.",
+    batchNotificationConfigureService: "Please configure and select a Shortening Service in top-right menu.",
+    batchNotificationBatchComplete: "Batch shortening operation complete!",
+    batchNotificationNoArchive: "No compiled links to archive.",
+    batchNotificationArchiveSuccess: "Archived {count} links to the history log!",
+
+    tplTitle: "Parameter Templates",
+    tplDesc: "Select standard channels or custom tracking blueprints",
+    tplSaveCurrentBtn: "Save Current Config",
+    tplSaveAsCustomTitle: "Save Setup as Custom Template",
+    tplNameLabel: "Template Name",
+    tplDescLabel: "Description (Optional)",
+    tplCreateBtn: "Create Custom Template",
+    tplSearchPlaceholder: "Search templates...",
+    tplNoMatches: "No templates matching \"{query}\"",
+    tplOfficialBadge: "Official",
+    tplCustomBadge: "Custom",
+    tplDefaultDesc: "Custom tracking templates.",
+    tplDeleteTooltip: "Delete Custom Template",
+
+    presetTitle: "Saved Presets (Quick Access)",
+    presetDesc: "Save and reload complete campaign form configurations",
+    presetInputPlaceholder: "Save current setup as preset...",
+    presetSaveBtn: "Save",
+    presetSavedBtn: "Saved",
+    presetSearchPlaceholder: "Search saved presets...",
+    presetActiveBadge: "Active",
+    presetLoadBadge: "Load",
+    presetDeleteTooltip: "Delete Preset",
+    presetNoPresets: "No saved presets found"
   },
   he: {
     title: "יוצר קישורי UTM",
@@ -432,7 +572,77 @@ export const translations: Record<Language, TranslationDict> = {
     brandedDomainLabel: "דומיין מותג (אופציונלי)",
     tinyurlFallbackNote: "* הערה: אם מפתח TinyURL יישאר ריק, האפליקציה תשתמש אוטומטית ב-API החינמי והאנונימי של TinyURL לצורך קיצור!",
     settingsSavedBtn: "ההגדרות נשמרו!",
-    saveConfigBtn: "שמור הגדרות"
+    saveConfigBtn: "שמור הגדרות",
+
+    // Batch Creator & Templates/Presets Hebrew Translation
+    batchImportTitle: "ייבוא רשימת כתובות אתר",
+    batchImportDesc: "העלה קובץ TXT/CSV או הדבק קישורי יעד המופרדים בשורה חדשה",
+    batchDragDropTitle: "גרור ושחרר קבצים כאן",
+    batchDragDropDesc: "או לחץ כדי לדפדף במערכת (.csv או .txt)",
+    batchOrPasteManually: "או הדבק ידנית",
+    batchParseAppend: "נתח והוסף כתובות URL",
+    batchGlobalConfigTitle: "הגדרות UTM גלובליות / קבוצתיות",
+    batchGlobalConfigDesc: "הגדר תגי מעקב נפוצים להחלה מיידית או למילוי תאים ריקים ברשימה שלך",
+    batchFillEmpty: "מלא שדות ריקים בשורות",
+    batchOverwriteAll: "דרוס פרמטרים בכל השורות",
+    batchLedgerTitle: "יומן מחולל הקישורים הקבוצתי",
+    batchLedgerDesc: "סקור, ערוך ועבד קישורי קמפיין בכמויות בזמן אמת",
+    batchBulkShorten: "קיצור המוני",
+    batchCopyUtms: "העתק קישורים",
+    batchLogHistory: "שמור בהיסטוריה",
+    batchDownloadCsv: "הורד קובץ CSV",
+    batchTableHeaderUrl: "כתובת אתר יעד",
+    batchTableHeaderSource: "מקור (Source)",
+    batchTableHeaderMedium: "אמצעי (Medium)",
+    batchTableHeaderCampaign: "קמפיין (Campaign)",
+    batchTableHeaderOutput: "קישורים שנוצרו",
+    batchTableHeaderQr: "קוד QR",
+    batchTableHeaderActions: "פעולות",
+    batchWaitingUrl: "ממתין לכתובת URL...",
+    batchShortenAction: "קצר קישור",
+    batchConfirmClear: "האם אתה בטוח שברצונך למחוק את כל השורות בקבוצה?",
+    batchNotificationImportSuccess: "ייבוא בהצלחה של {count} כתובות URL!",
+    batchNotificationImportFail: "לא ניתן לנתח כתובות URL תקינות מהקובץ.",
+    batchNotificationAppendSuccess: "נוספו {count} כתובות URL לטבלה.",
+    batchNotificationNoUrls: "לא נמצאו כתובות URL תקינות בהדבקה.",
+    batchNotificationApplySuccess: "פרמטרי UTM גלובליים הוחלו על כל השורות!",
+    batchNotificationApplyMissing: "שדות ריקים מולאו בערכים הגלובליים.",
+    batchNotificationClearSuccess: "כל הרשומות בקבוצה נמחקו.",
+    batchNotificationNoCompiled: "אין קישורים מוכנים להעתקה.",
+    batchNotificationCopySuccess: "הועתקו {count} קישורים ללוח הגזירים!",
+    batchNotificationShortenSuccess: "הקישור קוצר בהצלחה!",
+    batchNotificationShortenFail: "שגיאה בשירות קיצור הקישורים.",
+    batchNotificationBatchStart: "מתחיל קיצור המוני עבור {count} קישורים...",
+    batchNotificationBatchEmpty: "כל השורות התקינות כבר מקוצרות או ריקות.",
+    batchNotificationConfigureService: "אנא הגדר ובחר שירות קיצור קישורים בתפריט הימני העליון.",
+    batchNotificationBatchComplete: "פעולת הקיצור ההמוני הושלמה!",
+    batchNotificationNoArchive: "אין קישורים מוכנים לארכוב.",
+    batchNotificationArchiveSuccess: "אורכבו בהצלחה {count} קישורים ביומן ההיסטוריה!",
+
+    tplTitle: "תבניות פרמטרים",
+    tplDesc: "בחר ערוצים סטנדרטיים או תבניות מעקב מותאמות אישית",
+    tplSaveCurrentBtn: "שמור הגדרות נוכחיות",
+    tplSaveAsCustomTitle: "שמור הגדרה כתבנית מותאמת אישית",
+    tplNameLabel: "שם התבנית",
+    tplDescLabel: "תיאור (אופציונלי)",
+    tplCreateBtn: "צור תבנית מותאמת אישית",
+    tplSearchPlaceholder: "חפש תבניות...",
+    tplNoMatches: "לא נמצאו תבניות המתאימות ל-\"{query}\"",
+    tplOfficialBadge: "רשמי",
+    tplCustomBadge: "מותאם אישית",
+    tplDefaultDesc: "תבנית מעקב מותאמת אישית.",
+    tplDeleteTooltip: "מחק תבנית שמורה",
+
+    presetTitle: "ערכות שמורות (גישה מהירה)",
+    presetDesc: "שמור וטען מחדש הגדרות טופס קמפיין מלאות",
+    presetInputPlaceholder: "שמור הגדרה נוכחית כערכה...",
+    presetSaveBtn: "שמור",
+    presetSavedBtn: "נשמר",
+    presetSearchPlaceholder: "חפש ערכות שמורות...",
+    presetActiveBadge: "פעיל",
+    presetLoadBadge: "טען ערכה",
+    presetDeleteTooltip: "מחק ערכה שמורה",
+    presetNoPresets: "לא נמצאו ערכות שמורות"
   },
   ru: {
     title: "Конструктор ссылок UTM",
@@ -576,6 +786,76 @@ export const translations: Record<Language, TranslationDict> = {
     brandedDomainLabel: "Брендированный домен (опционально)",
     tinyurlFallbackNote: "* Примечание: Если токен TinyURL не указан, будет использован бесплатный анонимный API TinyURL!",
     settingsSavedBtn: "Настройки сохранены!",
-    saveConfigBtn: "Сохранить конфигурацию"
+    saveConfigBtn: "Сохранить конфигурацию",
+
+    // Batch Creator & Templates/Presets Russian Translation
+    batchImportTitle: "Импорт списка базовых URL",
+    batchImportDesc: "Загрузите файл TXT/CSV или вставьте ссылки назначения, разделенные новой строкой",
+    batchDragDropTitle: "Перетащите файлы сюда",
+    batchDragDropDesc: "или нажмите для выбора в системе (.csv или .txt)",
+    batchOrPasteManually: "или вставьте вручную",
+    batchParseAppend: "Разобрать ссылки и добавить",
+    batchGlobalConfigTitle: "Глобальная конфигурация UTM",
+    batchGlobalConfigDesc: "Настройте общие теги отслеживания для мгновенного применения или заполнения пустых ячеек в списке",
+    batchFillEmpty: "Заполнить пустые поля строк",
+    batchOverwriteAll: "Перезаписать параметры всех строк",
+    batchLedgerTitle: "Реестр пакетного создания ссылок",
+    batchLedgerDesc: "Просматривайте, редактируйте и массово обрабатывайте ссылки на кампании в реальном времени",
+    batchBulkShorten: "Массовое сокращение",
+    batchCopyUtms: "Копировать ссылки",
+    batchLogHistory: "Записать в историю",
+    batchDownloadCsv: "Скачать CSV",
+    batchTableHeaderUrl: "Базовый URL назначения веб-сайта",
+    batchTableHeaderSource: "Источник (Source)",
+    batchTableHeaderMedium: "Канал (Medium)",
+    batchTableHeaderCampaign: "Кампания (Campaign)",
+    batchTableHeaderOutput: "Скомпилированные ссылки",
+    batchTableHeaderQr: "QR-код",
+    batchTableHeaderActions: "Действия",
+    batchWaitingUrl: "Ожидание URL...",
+    batchShortenAction: "Сократить",
+    batchConfirmClear: "Вы уверены, что хотите очистить весь список?",
+    batchNotificationImportSuccess: "Успешно импортировано URL-адресов: {count}!",
+    batchNotificationImportFail: "Не удалось разобрать валидные URL-адреса из файла.",
+    batchNotificationAppendSuccess: "Добавлено {count} URL-адресов в таблицу.",
+    batchNotificationNoUrls: "В буфере обмена не найдено валидных URL-адресов.",
+    batchNotificationApplySuccess: "Глобальные параметры UTM применены ко всем строкам!",
+    batchNotificationApplyMissing: "Пустые поля заполнены глобальными значениями.",
+    batchNotificationClearSuccess: "Все записи пакетного генератора удалены.",
+    batchNotificationNoCompiled: "Нет скомпилированных URL для копирования.",
+    batchNotificationCopySuccess: "Скопировано {count} ссылок в буфер обмена!",
+    batchNotificationShortenSuccess: "Ссылка успешно сокращена!",
+    batchNotificationShortenFail: "Ошибка службы сокращения ссылок.",
+    batchNotificationBatchStart: "Запуск массового сокращения для {count} ссылок...",
+    batchNotificationBatchEmpty: "Все валидные строки уже сокращены или пусты.",
+    batchNotificationConfigureService: "Пожалуйста, настройте и выберите службу сокращения ссылок в меню сверху справа.",
+    batchNotificationBatchComplete: "Пакетное сокращение завершено!",
+    batchNotificationNoArchive: "Нет готовых ссылок для архивирования.",
+    batchNotificationArchiveSuccess: "Архивировано {count} ссылок в журнал истории!",
+
+    tplTitle: "Шаблоны параметров",
+    tplDesc: "Выберите стандартные каналы или собственные схемы отслеживания",
+    tplSaveCurrentBtn: "Сохранить текущую конфигурацию",
+    tplSaveAsCustomTitle: "Сохранить настройки как шаблон",
+    tplNameLabel: "Имя шаблона",
+    tplDescLabel: "Описание (необязательно)",
+    tplCreateBtn: "Создать шаблон",
+    tplSearchPlaceholder: "Поиск шаблонов...",
+    tplNoMatches: "Нет шаблонов, соответствующих вашему запросу: \"{query}\"",
+    tplOfficialBadge: "Официальный",
+    tplCustomBadge: "Свой",
+    tplDefaultDesc: "Пользовательский шаблон отслеживания.",
+    tplDeleteTooltip: "Удалить шаблон",
+
+    presetTitle: "Сохраненные пресеты (Быстрый доступ)",
+    presetDesc: "Сохраняйте и загружайте полные конфигурации полей кампании",
+    presetInputPlaceholder: "Сохранить текущую настройку как пресет...",
+    presetSaveBtn: "Сохранить",
+    presetSavedBtn: "Сохранено",
+    presetSearchPlaceholder: "Поиск сохраненных пресетов...",
+    presetActiveBadge: "Активен",
+    presetLoadBadge: "Загрузить пресет",
+    presetDeleteTooltip: "Удалить пресет",
+    presetNoPresets: "Сохраненные пресеты не найдены"
   }
 };

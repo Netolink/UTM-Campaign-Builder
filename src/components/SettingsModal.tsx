@@ -76,7 +76,7 @@ export default function SettingsModal({
                 {t.bitlyTitle}
               </span>
               <a
-                href="https://bitly.com/a/oauth_apps"
+                href="https://app.bitly.com/settings/api"
                 target="_blank"
                 rel="noreferrer"
                 className={`text-xs text-[#3B82F6] hover:text-blue-600 flex items-center gap-1 hover:underline cursor-pointer font-sans ${isRtl ? "flex-row-reverse" : ""}`}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Bookmark, Search, Trash2, Calendar, ClipboardList, Check } from "lucide-react";
 import { CampaignPreset } from "../types";
+import { translations, Language } from "../translations";
 
 interface PresetSelectorProps {
   presets: CampaignPreset[];
@@ -8,7 +9,7 @@ interface PresetSelectorProps {
   onSavePreset: (name: string) => void;
   onDeletePreset: (id: string) => void;
   currentPresetId?: string;
-  lang?: string;
+  lang?: Language;
 }
 
 export default function PresetSelector({
@@ -22,6 +23,8 @@ export default function PresetSelector({
   const [searchQuery, setSearchQuery] = useState("");
   const [newPresetName, setNewPresetName] = useState("");
   const [isSavedSuccessfully, setIsSavedSuccessfully] = useState(false);
+
+  const t = translations[lang];
 
   const filteredPresets = presets.filter((p) =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -44,16 +47,16 @@ export default function PresetSelector({
       <div>
         <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5 font-display">
           <Bookmark className="w-4 h-4 text-slate-500" />
-          Saved Presets (Quick Access)
+          {t.presetTitle}
         </h3>
-        <p className="text-[11px] text-slate-400">Save and reload complete campaign form configurations</p>
+        <p className="text-[11px] text-slate-400">{t.presetDesc}</p>
       </div>
 
       {/* Save Current State Form */}
       <form onSubmit={handleSave} className="flex gap-2">
         <input
           type="text"
-          placeholder="Save current setup as preset..."
+          placeholder={t.presetInputPlaceholder}
           required
           value={newPresetName}
           onChange={(e) => setNewPresetName(e.target.value)}
@@ -66,10 +69,10 @@ export default function PresetSelector({
           {isSavedSuccessfully ? (
             <>
               <Check className="w-3.5 h-3.5" />
-              Saved
+              {t.presetSavedBtn}
             </>
           ) : (
-            "Save"
+            t.presetSaveBtn
           )}
         </button>
       </form>
@@ -81,7 +84,7 @@ export default function PresetSelector({
         </span>
         <input
           type="text"
-          placeholder="Search saved presets..."
+          placeholder={t.presetSearchPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full text-xs pl-8 pr-3 py-1.5 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none transition-all font-sans"
@@ -129,7 +132,7 @@ export default function PresetSelector({
                         : "bg-slate-50 text-[#64748B] group-hover:bg-slate-100"
                     }`}
                   >
-                    {isActive ? "Active" : "Load"}
+                    {isActive ? t.presetActiveBadge : t.presetLoadBadge}
                   </span>
 
                   <button
@@ -143,7 +146,7 @@ export default function PresetSelector({
                         ? "text-slate-400 hover:text-red-400 hover:bg-slate-800"
                         : "text-slate-400 hover:text-red-600 hover:bg-red-50"
                     }`}
-                    title="Delete Preset"
+                    title={t.presetDeleteTooltip}
                   >
                     <Trash2 className="w-3 h-3" />
                   </button>
@@ -152,9 +155,9 @@ export default function PresetSelector({
             );
           })
         ) : (
-          <div className="py-6 text-center text-xs text-[#64748B] border border-dashed border-[#e2e8f0] rounded-[4px] flex flex-col items-center justify-center gap-1.5 bg-white">
+          <div className="py-6 text-center text-xs text-[#64748B] border border-dashed border-[#e2e8f0] rounded-[4px] flex flex-col items-center justify-center gap-1.5 bg-white font-sans">
             <ClipboardList className="w-5 h-5 text-slate-300" />
-            <span>No saved presets found</span>
+            <span>{t.presetNoPresets}</span>
           </div>
         )}
       </div>

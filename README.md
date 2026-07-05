@@ -1,19 +1,90 @@
-# UTM Campaign Builder
+# UTM Campaign Builder 🚀
 
-An enterprise-grade, high-performance web application designed to construct, validate, shorten, and archive marketing campaign URLs with ease.
+An enterprise-grade, high-performance web application designed to construct, validate, shorten, and archive marketing campaign URLs with ease. Fully localized and responsive for desktop and mobile devices.
 
-## Live Deployment
 👉 **[Try the UTM Campaign Builder Live](https://netolink.github.io/UTM-Campaign-Builder/)**
 
 ---
 
-## Features
+## 🌍 Multilingual Support / תמיכה מלאה בריבוי שפות
+The application features complete translation and localization across multiple languages. You can switch instantly between:
+- **English** (Default)
+- **Hebrew (עברית)** (Full Right-to-Left RTL alignment, custom localized terms, alerts, and placeholders)
+- **Russian (Русский)**
 
-- **Dynamic Link Constructor**: Enter your website destination URL and immediately compile standard Google Analytics UTM parameters (`utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `utm_id`).
-- **Dynamic Field Optimization**: Custom parameters support (e.g., `gclid`, `fbclid`, or custom partner keys).
-- **Batch Creator**: Input lists or load spreadsheet CSV data to generate hundreds of UTM-tracked URLs at once, complete with export features (CSV/Excel).
-- **Smart Templates & Presets**: Keep templates for recurring marketing setups, or select predefined source/medium combinations to speed up your workflow.
-- **URL Shortener Service Integrations**: Directly shorten links using TinyURL (free/anonymous or custom API), Bitly, Rebrandly, or DUB.co.
-- **Live QR Code Generator**: Generates clean, downloadable high-contrast vector QR codes with customizable brand color accents.
-- **Local & Cloud Syncing**: Access Guest Mode (saving data safely in your local storage) or authenticate with Google to sync campaigns across your devices via Firestore.
-- **Enterprise UI**: Polished, minimal design built with Tailwind CSS, supporting fully responsive controls across mobile, tablet, and desktop views.
+---
+
+## 🌟 Key Features / תכונות מרכזיות
+
+### 1. Dynamic Link Constructor / מחולל קישורים דינמי
+- Assemble URLs instantly with standard Google Analytics parameters:
+  - `utm_source` (מקור)
+  - `utm_medium` (אמצעי)
+  - `utm_campaign` (קמפיין)
+  - `utm_term` (מונח חיפוש)
+  - `utm_content` (תוכן המודעה)
+  - `utm_id` (מזהה קמפיין)
+- Easily append custom custom tracking parameters (e.g., `gclid`, `fbclid`, or custom analytical identifiers).
+- Auto-validation checks for trailing slashes, protocols (`http`/`https`), and URL encoding integrity.
+
+### 2. Batch URL Builder Ledger / יצירה קבוצתית (Batch)
+- **Flexible Data Import**: Paste newline-separated URLs manually, drag & drop, or upload TXT/CSV files containing base destination URLs.
+- **Bulk Action Ledger**: Edit individual cells within an interactive grid spreadsheet.
+- **Global UTM Configuration**: Set source, medium, campaign, term, content, or ID globally to either fill missing empty fields or overwrite all row parameters at once.
+- **Bulk Action Operations**:
+  - Bulk Shorten: Sequentially request short URLs for all valid rows with elegant rate-limit handling.
+  - Bulk Copy: Instantly extract full UTMs or shortened versions straight to your clipboard.
+  - Bulk Archive: Send all compiled configurations into your campaign history with a single click.
+  - CSV Export: Download your entire structured grid back into a clean CSV spreadsheet.
+
+### 3. Smart Templates / תבניות פרמטרים
+- **Built-in Official Blueprints**: Standard official presets for Google Search, Facebook Ads, LinkedIn Organic, Newsletter, and Twitter/X campaigns.
+- **Custom Templates (תבניות מותאמות אישית)**: Configure custom combinations of tracking keys, name them, and save them for instant recurring usage.
+- Integrated templates search engine and deletion tool.
+
+### 4. Campaign Presets / ערכות שמורות
+- Capture the entire current form state (Base URL, all UTM fields, custom parameters) and store it as a quick-access campaign preset.
+- Instantly recall full campaigns with one click.
+- Full search functionality to easily find, apply, or delete custom presets.
+
+### 5. URL Shortener Integrations / קיצור קישורים
+Shorten links instantly using your preferred service directly from the interface:
+- **TinyURL**: Anonymous free service, or token-authenticated domains and aliases.
+- **Bitly**: Authenticate via personal access tokens to register click statistics.
+- **Rebrandly**: Customize with custom branded domains and workspace APIs.
+- **Dub.co**: Modern high-performance links shortening with advanced targeting support.
+
+### 6. Live QR Code Generator / יצירת קוד QR
+- Real-time generation of high-contrast, scalable QR codes for any created campaign URL.
+- Customize foreground colors to align with your corporate brand guidelines.
+- Fast downloadable image export directly to your local file system.
+
+### 7. Storage & Secure Persistence / סנכרון ואבטחה
+- **Guest Mode (אחסון מקומי)**: Safely saves templates, presets, and history using client-side `localStorage`.
+- **Cloud Database Synchronization**: Login with Google Credentials (via Firebase Auth) to seamlessly back up and synchronize all templates, presets, and campaign history logs securely to Firestore.
+
+---
+
+## 🔗 Shortening Service APIs & Documentation / קישורים למסמכי ה-API הרשמיים
+For developers looking to integrate or configure keys within the application, here are the links to the official API docs for each service:
+
+| Service | Official Developers Portal | Key Requirements |
+| :--- | :--- | :--- |
+| **TinyURL** | [TinyURL API Documentation 📖](https://developer.tinyurl.com/) | API Token / Custom Domains / Free Tier Available |
+| **Bitly** | [Bitly Developer Center 📖](https://dev.bitly.com/) | OAuth2 Access Tokens / Advanced Click Tracking |
+| **Rebrandly** | [Rebrandly API Reference 📖](https://developers.rebrandly.com/) | API Key / Custom Branded Domains / Workspaces |
+| **Dub.co** | [Dub.co Developers Platform 📖](https://dub.co/docs) | Dub SDK & Bearer Token / Advanced Geo-analytics |
+
+---
+
+## 🛠️ Technology Stack / טכנולוגיות
+- **Frontend Framework**: React 18 with Vite
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Database & Auth**: Firebase Firestore & Firebase Authentication
+- **Icons**: Lucide React
+- **Animations**: Motion (framer-motion)
+
+---
+
+Developed with ❤️ for marketers, agencies, and publishers.
