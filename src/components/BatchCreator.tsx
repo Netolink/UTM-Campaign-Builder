@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { HistoryLog, ShortenerSettings } from "../types";
+import { translations, Language } from "../translations";
+import { shortenUrl } from "../lib/shortener";
 
 interface BatchRow {
   id: string;
@@ -38,6 +40,7 @@ interface BatchCreatorProps {
   shortenerService: "none" | "bitly" | "rebrandly" | "tinyurl" | "dub";
   onAddHistoryLogs: (logs: HistoryLog[]) => void;
   showNotification: (msg: string) => void;
+  lang?: Language;
 }
 
 export default function BatchCreator({
@@ -45,7 +48,11 @@ export default function BatchCreator({
   shortenerService,
   onAddHistoryLogs,
   showNotification,
+  lang = "en",
 }: BatchCreatorProps) {
+  const t = translations[lang];
+  const isRtl = lang === "he";
+
   // State for rows
   const [rows, setRows] = useState<BatchRow[]>([]);
   const [pasteText, setPasteText] = useState("");
@@ -485,24 +492,16 @@ export default function BatchCreator({
       );
 
       try {
-        const response = await fetch("/api/shorten", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            url: compiled,
-            service: shortenerService,
-            settings,
-          }),
+        const shortUrl = await shortenUrl({
+          service: shortenerService,
+          longUrl: compiled,
+          settings,
+          lang,
         });
-
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.error || "Rate limited or authentication error");
-        }
 
         setRows((curr) =>
           curr.map((r) =>
-            r.id === row.id ? { ...r, shortenedUrl: data.shortUrl, isShortening: false } : r
+            r.id === row.id ? { ...r, shortenedUrl: shortUrl, isShortening: false } : r
           )
         );
       } catch (err: any) {
@@ -603,18 +602,18 @@ export default function BatchCreator({
           </div>
 
           {/* Paste Textarea Area */}
-          <div className="space-y-2">
+          <div className="space-y-2 font-sans">
             <textarea
               rows={4}
               value={pasteText}
               onChange={(e) => setPasteText(e.target.value)}
               placeholder="https://example.com/item1&#10;https://example.com/item2&#10;https://example.com/item3"
-              className="w-full text-xs p-3 border border-[#e2e8f0] bg-white focus:bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all font-mono leading-relaxed"
+              className="w-full text-xs p-3 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 transition-all font-mono leading-relaxed rounded-[4px] focus:outline-none"
             />
             <button
               onClick={handlePasteSubmit}
               disabled={!pasteText.trim()}
-              className="w-full py-2 bg-[#191c1e] text-white rounded-[4px] text-xs font-bold hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer font-sans"
+              className="w-full py-2 bg-[#191c1e] text-white rounded-[4px] text-xs font-bold hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
               Parse URLs & Append
             </button>
@@ -645,7 +644,7 @@ export default function BatchCreator({
                   placeholder="e.g. facebook"
                   value={globalSource}
                   onChange={(e) => setGlobalSource(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
+                  className="w-full text-xs px-3 py-2 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none font-sans"
                 />
               </div>
 
@@ -658,7 +657,7 @@ export default function BatchCreator({
                   placeholder="e.g. cpc"
                   value={globalMedium}
                   onChange={(e) => setGlobalMedium(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
+                  className="w-full text-xs px-3 py-2 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none font-sans"
                 />
               </div>
 
@@ -671,7 +670,7 @@ export default function BatchCreator({
                   placeholder="e.g. summer_sale"
                   value={globalCampaign}
                   onChange={(e) => setGlobalCampaign(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
+                  className="w-full text-xs px-3 py-2 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none font-sans"
                 />
               </div>
 
@@ -684,7 +683,7 @@ export default function BatchCreator({
                   placeholder="e.g. marketing"
                   value={globalTerm}
                   onChange={(e) => setGlobalTerm(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
+                  className="w-full text-xs px-3 py-2 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none font-sans"
                 />
               </div>
 
@@ -697,7 +696,7 @@ export default function BatchCreator({
                   placeholder="e.g. red_banner"
                   value={globalContent}
                   onChange={(e) => setGlobalContent(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
+                  className="w-full text-xs px-3 py-2 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none font-sans"
                 />
               </div>
 
@@ -710,7 +709,7 @@ export default function BatchCreator({
                   placeholder="e.g. 98124"
                   value={globalId}
                   onChange={(e) => setGlobalId(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
+                  className="w-full text-xs px-3 py-2 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none font-sans"
                 />
               </div>
             </div>

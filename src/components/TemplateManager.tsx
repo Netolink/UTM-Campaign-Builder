@@ -9,6 +9,7 @@ interface TemplateManagerProps {
   onSaveCurrentAsTemplate: (name: string, description: string) => void;
   onDeleteCustomTemplate: (id: string) => void;
   currentActiveId?: string;
+  lang?: string;
 }
 
 export default function TemplateManager({
@@ -17,6 +18,7 @@ export default function TemplateManager({
   onSaveCurrentAsTemplate,
   onDeleteCustomTemplate,
   currentActiveId,
+  lang = "en",
 }: TemplateManagerProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSaveForm, setShowSaveForm] = useState(false);
@@ -88,7 +90,7 @@ export default function TemplateManager({
                 required
                 value={newTemplateName}
                 onChange={(e) => setNewTemplateName(e.target.value)}
-                className="w-full text-xs px-2.5 py-1.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
+                className="w-full text-xs px-2.5 py-1.5 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none font-sans"
               />
             </div>
             <div>
@@ -98,7 +100,7 @@ export default function TemplateManager({
                 placeholder="Brief tracking description..."
                 value={newTemplateDesc}
                 onChange={(e) => setNewTemplateDesc(e.target.value)}
-                className="w-full text-xs px-2.5 py-1.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-sans"
+                className="w-full text-xs px-2.5 py-1.5 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none font-sans"
               />
             </div>
           </div>
@@ -121,7 +123,7 @@ export default function TemplateManager({
           placeholder="Search templates..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full text-xs pl-8 pr-3 py-1.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all font-sans"
+          className="w-full text-xs pl-8 pr-3 py-1.5 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none transition-all font-sans"
         />
       </div>
 

@@ -8,6 +8,7 @@ interface PresetSelectorProps {
   onSavePreset: (name: string) => void;
   onDeletePreset: (id: string) => void;
   currentPresetId?: string;
+  lang?: string;
 }
 
 export default function PresetSelector({
@@ -16,6 +17,7 @@ export default function PresetSelector({
   onSavePreset,
   onDeletePreset,
   currentPresetId,
+  lang = "en",
 }: PresetSelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [newPresetName, setNewPresetName] = useState("");
@@ -55,7 +57,7 @@ export default function PresetSelector({
           required
           value={newPresetName}
           onChange={(e) => setNewPresetName(e.target.value)}
-          className="flex-1 text-xs px-2.5 py-1.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all font-sans"
+          className="flex-1 text-xs px-2.5 py-1.5 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none transition-all font-sans"
         />
         <button
           type="submit"
@@ -82,7 +84,7 @@ export default function PresetSelector({
           placeholder="Search saved presets..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full text-xs pl-8 pr-3 py-1.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all font-sans"
+          className="w-full text-xs pl-8 pr-3 py-1.5 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none transition-all font-sans"
         />
       </div>
 

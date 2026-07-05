@@ -47,6 +47,9 @@ import {
   CustomParameter,
 } from "./types";
 
+import { translations, Language } from "./translations";
+
+import { shortenUrl } from "./lib/shortener";
 import UrlValidator from "./components/UrlValidator";
 import SettingsModal from "./components/SettingsModal";
 import TemplateManager from "./components/TemplateManager";
@@ -55,6 +58,36 @@ import HistoryLogTable from "./components/HistoryLogTable";
 import BatchCreator from "./components/BatchCreator";
 
 export default function App() {
+  // Language Support
+  const [lang, setLang] = useState<Language>(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = params.get("lang")?.toLowerCase();
+      if (urlLang === "he" || urlLang === "ru" || urlLang === "en") {
+        return urlLang as Language;
+      }
+    }
+    const saved = localStorage.getItem("utm_campaign_lang");
+    return (saved as Language) || "en";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("utm_campaign_lang", lang);
+  }, [lang]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = params.get("lang")?.toLowerCase();
+      if (urlLang === "he" || urlLang === "ru" || urlLang === "en") {
+        setLang(urlLang as Language);
+      }
+    }
+  }, []);
+
+  const t = translations[lang];
+  const isRtl = lang === "he";
+
   // Form State
   const [baseUrl, setBaseUrl] = useState("");
   const [utmSource, setUtmSource] = useState("");
@@ -182,18 +215,18 @@ export default function App() {
   const handleLogin = async () => {
     if (isUsingDummyConfig) {
       setAuthErrorMessage(
-        "נראה שדף ה-GitHub Pages שלך נבנה ללא הגדרות ה-Firebase האמיתיות שלך (מכיוון שהקובץ firebase-applet-config.json נמצא ב-.gitignore ולא עולה ל-GitHub).\n\n" +
-        "כדי לאפשר התחברות וסנכרון לענן ב-GitHub Pages, עליך לבצע את השלבים הבאים:\n\n" +
-        "1. כנס ל-Repository שלך ב-GitHub.\n" +
-        "2. מעבר אל Settings -> Secrets and variables -> Actions.\n" +
-        "3. לחץ על 'New repository secret' והוסף את המשתנים הבאים (תוכל להעתיק את הערכים שלהם מקובץ הקונפיגורציה המקומי שלך ב-AI Studio):\n" +
+        "It looks like your GitHub Pages site is built without your live Firebase credentials (since the firebase-applet-config.json file is ignored by Git and not pushed to GitHub).\n\n" +
+        "To enable Google Sign-In and cloud sync on GitHub Pages, follow these steps:\n\n" +
+        "1. Go to your GitHub repository.\n" +
+        "2. Navigate to Settings -> Secrets and variables -> Actions.\n" +
+        "3. Click 'New repository secret' and add the following keys with the values from your local config in AI Studio:\n" +
         "   - VITE_FIREBASE_API_KEY\n" +
         "   - VITE_FIREBASE_AUTH_DOMAIN\n" +
         "   - VITE_FIREBASE_PROJECT_ID\n" +
         "   - VITE_FIREBASE_STORAGE_BUCKET\n" +
         "   - VITE_FIREBASE_MESSAGING_SENDER_ID\n" +
         "   - VITE_FIREBASE_APP_ID\n\n" +
-        "4. לאחר הוספת ה-Secrets, בצע Push חדש או הפעל מחדש את ה-Workflow כדי לבנות מחדש את האתר עם הפרטים האמיתיים!"
+        "4. Once added, run a new build workflow to redeploy your site with live sync support!"
       );
       setShowAuthErrorModal(true);
       return;
@@ -205,21 +238,28 @@ export default function App() {
     } catch (err: any) {
       console.error("Sign-in failure:", err);
       const isIframe = window.self !== window.top;
-      if (isIframe || err.code === "auth/iframe-directory-not-supported" || err.code === "auth/popup-blocked" || err.message?.includes("iframe")) {
-        setAuthErrorMessage(
-          "התחברות עם גוגל חסומה בתוך חלון ה-iFrame של התצוגה המקדימה בשל מגבלות אבטחה של הדפדפנים על Cross-Origin. \n\nכדי להתחבר בהצלחה ולסנכרן את הנתונים שלך לענן (Firestore), אנא לחץ על כפתור ה- \"Open in new tab\" (פתח בלשונית חדשה) בפינה הימנית העליונה של מסך התצוגה המקדימה ב-AI Studio, והתחבר משם ללא שום בעיה!"
-        );
-      } else if (err.code === "auth/unauthorized-domain") {
-        setAuthErrorMessage(
-          "שגיאת דומיין לא מורשה (Unauthorized Domain).\n\n" +
-          "עליך לאשר את הדומיין של GitHub Pages בתוך ממשק הניהול של Firebase:\n\n" +
-          "1. היכנס ל-Firebase Console.\n" +
-          "2. עבור ללשונית Authentication -> Settings (הגדרות) -> Authorized domains (דומיינים מורשים).\n" +
-          "3. לחץ על 'Add domain' והוסף את הדומיין שלך: netolink.github.io\n" +
-          "4. שמור ונסה להתחבר מחדש!"
-        );
+      if (
+        isIframe ||
+        err.code === "auth/iframe-directory-not-supported" ||
+        err.code === "auth/popup-blocked" ||
+        err.message?.includes("iframe")
+      ) {
+        setAuthErrorMessage(t.authBlockedIframeMessage);
+      } else if (
+        err.code === "auth/unauthorized-domain" ||
+        err.message?.includes("unauthorized-domain")
+      ) {
+        const currentDomain = typeof window !== "undefined" ? window.location.hostname : "localhost";
+        setAuthErrorMessage(t.authBlockedUnauthorizedDomainMessage.replace("{domain}", currentDomain));
       } else {
-        setAuthErrorMessage(err.message || "שגיאה בעת התחברות. אנא ודא שאישרת חלונות קופצים (Popups) בדפדפן, שהדומיין מורשה ב-Firebase Console ונסה שוב.");
+        setAuthErrorMessage(
+          err.message ||
+            (lang === "he"
+              ? "אירעה שגיאה במהלך ההתחברות. אנא ודא שחלונות קופצים מותרים, שהדומיין שלך מורשה ב-Firebase, ונסה שוב."
+              : lang === "ru"
+              ? "Произошла ошибка при входе. Убедитесь, что всплывающие окна разрешены, домен авторизован в Firebase, и попробуйте снова."
+              : "An error occurred during sign-in. Please ensure popups are allowed, your domain is authorized in Firebase, and try again.")
+        );
       }
       setShowAuthErrorModal(true);
     }
@@ -489,41 +529,15 @@ export default function App() {
     setShorteningError("");
     setShortenedUrl("");
 
-    let apiKeyToUse = "";
-    let domainToUse = "";
-
-    if (shortenerService === "bitly") {
-      apiKeyToUse = settings.bitlyToken;
-      domainToUse = settings.bitlyDomain;
-    } else if (shortenerService === "rebrandly") {
-      apiKeyToUse = settings.rebrandlyKey;
-      domainToUse = settings.rebrandlyDomain;
-    } else if (shortenerService === "tinyurl") {
-      apiKeyToUse = settings.tinyurlToken;
-      domainToUse = settings.tinyurlDomain;
-    } else if (shortenerService === "dub") {
-      apiKeyToUse = settings.dubToken;
-      domainToUse = settings.dubDomain;
-    }
-
     try {
-      const res = await fetch("/api/shorten", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          service: shortenerService,
-          longUrl: fullAssembledUrl,
-          apiKey: apiKeyToUse || undefined,
-          customDomain: domainToUse || undefined,
-        }),
+      const shortUrl = await shortenUrl({
+        service: shortenerService,
+        longUrl: fullAssembledUrl,
+        settings,
+        lang,
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to shorten. Check API Configuration.");
-      }
-
-      setShortenedUrl(data.shortUrl);
+      setShortenedUrl(shortUrl);
       setQrTarget("short");
       showTemporaryNotification("Short link generated successfully!");
     } catch (err: any) {
@@ -627,7 +641,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f9fb] text-[#191c1e] font-sans antialiased pb-16 selection:bg-[#000000] selection:text-white">
+    <div dir={isRtl ? "rtl" : "ltr"} className="flex flex-col min-h-screen bg-[#f7f9fb] text-[#191c1e] font-sans antialiased selection:bg-[#000000] selection:text-white">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/95 border-b border-[#e2e8f0] backdrop-blur-md px-6 py-4 shadow-xs">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -635,24 +649,41 @@ export default function App() {
             <div className="p-2.5 bg-[#000000] text-white rounded-[4px] shadow-sm flex items-center justify-center">
               <Link2 className="w-5.5 h-5.5" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-[#191c1e] font-display">UTM Campaign Builder</h1>
-              <p className="text-xs text-[#64748B] font-sans">Construct, validate, shorten, and archive enterprise campaign URLs</p>
+            <div className={isRtl ? "text-right" : "text-left"}>
+              <h1 className="text-xl font-bold tracking-tight text-[#191c1e] font-display">{t.title}</h1>
+              <p className="text-xs text-[#64748B] font-sans">{t.subtitle}</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            {/* Language Selector */}
+            <div className="flex items-center gap-1 bg-slate-50 border border-[#e2e8f0] p-1 rounded-[4px] shadow-xs" dir="ltr">
+              {(["en", "he", "ru"] as Language[]).map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setLang(l)}
+                  className={`px-2 py-1 text-[10px] font-bold rounded-[3px] transition-all cursor-pointer ${
+                    lang === l
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+                  }`}
+                >
+                  {l === "en" ? "EN" : l === "he" ? "עב" : "RU"}
+                </button>
+              ))}
+            </div>
             {/* Auth Status & Sync */}
             {isAuthLoading ? (
               <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 rounded-[4px] border border-slate-100">
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
-                <span className="text-[11px] text-slate-400 font-medium font-sans">Checking sync...</span>
+                <span className="text-[11px] text-slate-400 font-medium font-sans">{t.checkingSync}</span>
               </div>
             ) : currentUser ? (
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-[4px] border border-emerald-100 font-sans" title="Syncing to Google Cloud Firestore database">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-bold tracking-widest uppercase">Cloud</span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase">{t.cloudSync}</span>
                   {currentUser.photoURL ? (
                     <img
                       src={currentUser.photoURL}
@@ -675,13 +706,13 @@ export default function App() {
                   title="Sign Out from Google Campaign account"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Sign Out</span>
+                  <span className="hidden sm:inline">{t.signOut}</span>
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 text-slate-500 rounded-[4px] border border-slate-100 font-sans" title="Your campaigns are only saved on this device (offline)">
-                  <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400">Guest Mode</span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400">{t.guestMode}</span>
                 </div>
                 <button
                   onClick={handleLogin}
@@ -694,7 +725,7 @@ export default function App() {
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.85z" fill="#FBBC05"/>
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
                   </svg>
-                  <span>Sign In with Google</span>
+                  <span>{t.signInWithGoogle}</span>
                 </button>
               </div>
             )}
@@ -705,7 +736,7 @@ export default function App() {
               title="Configure Bitly / Rebrandly / TinyURL credentials"
             >
               <Settings className="w-3.5 h-3.5" />
-              API Integrations
+              {t.apiIntegrations}
             </button>
             <button
               onClick={handleResetForm}
@@ -731,7 +762,7 @@ export default function App() {
               }`}
             >
               <Sparkles className="w-4 h-4" />
-              Campaign Link Creator
+              {t.creatorTab}
             </button>
             <button
               onClick={() => setActiveTab("batch")}
@@ -742,7 +773,7 @@ export default function App() {
               }`}
             >
               <Layers className="w-4 h-4" />
-              Batch Creation
+              {t.batchTab}
             </button>
             <button
               onClick={() => setActiveTab("templates")}
@@ -753,7 +784,7 @@ export default function App() {
               }`}
             >
               <FileText className="w-4 h-4" />
-              Templates & Presets
+              {t.templatesTab}
               {(customTemplates.length > 0 || presets.length > 0) && (
                 <span className="px-1.5 py-0.5 text-[10px] bg-slate-100 text-slate-600 rounded-full font-bold">
                   {customTemplates.length + presets.length}
@@ -769,7 +800,7 @@ export default function App() {
               }`}
             >
               <Globe className="w-4 h-4" />
-              Campaign History Log
+              {t.historyTab}
               {historyLogs.length > 0 && (
                 <span className="px-1.5 py-0.5 text-[10px] bg-slate-900 text-white rounded-full font-bold">
                   {historyLogs.length}
@@ -801,139 +832,138 @@ export default function App() {
               {/* Primary Form */}
               <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-6 shadow-xs space-y-6">
                 <div className="border-b border-slate-100 pb-4">
-                  <h2 className="text-base font-bold text-[#191c1e] flex items-center gap-2 font-display">
+                  <h2 className={`text-base font-bold text-[#191c1e] flex items-center gap-2 font-display ${isRtl ? "text-right" : "text-left"}`}>
                     <Globe className="w-4.5 h-4.5 text-slate-500" />
-                    Destination URL & standard UTMs
+                    {t.urlTitle}
                   </h2>
-                  <p className="text-xs text-[#64748B] mt-0.5 font-sans">Specify destination and associate basic tracking tags</p>
                 </div>
 
                 {/* Website Destination Input */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px] font-sans">
-                    Website URL <span className="text-red-500">*</span>
+                  <label className={`block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px] font-sans ${isRtl ? "text-right" : "text-left"}`}>
+                    {t.urlLabel}
                   </label>
                   <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <span className={`absolute inset-y-0 ${isRtl ? "right-3.5" : "left-3.5"} flex items-center pointer-events-none text-slate-400`}>
                       <Globe className="w-4 h-4" />
                     </span>
                     <input
                       type="url"
-                      placeholder="e.g. https://mywebsite.com/landing-page"
+                      placeholder={t.urlPlaceholder}
                       required
                       value={baseUrl}
                       onChange={(e) => setBaseUrl(e.target.value)}
-                      className="w-full text-xs pl-10 pr-3 py-3 border border-[#e2e8f0] bg-white focus:bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all font-mono"
+                      className={`w-full text-xs ${isRtl ? "pr-10 pl-3.5" : "pl-10 pr-3"} py-3 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all font-mono placeholder:text-slate-400`}
                     />
                   </div>
                   {/* Real-time Validation Component */}
-                  <UrlValidator url={baseUrl} />
+                  <UrlValidator url={baseUrl} lang={lang} />
                 </div>
 
                 {/* Core Standard UTM Parameters Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
                   {/* Campaign Source */}
                   <div className="space-y-1.5 font-sans">
-                    <div className="flex justify-between">
-                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
-                        Source <span className="text-red-500">*</span>
+                    <div className="flex justify-between items-center">
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                        {lang === "he" ? "מקור הקמפיין" : lang === "ru" ? "Источник" : "Source"} <span className="text-red-500">*</span>
                       </label>
                       <span className="text-[9px] text-[#64748B] font-mono">utm_source</span>
                     </div>
                     <input
                       type="text"
-                      placeholder="e.g. google, newsletter"
+                      placeholder={t.sourcePlaceholder}
                       required
                       value={utmSource}
                       onChange={(e) => setUtmSource(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
+                      className="w-full text-xs px-3 py-2.5 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
 
                   {/* Campaign Medium */}
                   <div className="space-y-1.5 font-sans">
-                    <div className="flex justify-between">
-                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
-                        Medium <span className="text-red-500">*</span>
+                    <div className="flex justify-between items-center">
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                        {lang === "he" ? "אמצעי הקמפיין" : lang === "ru" ? "Тип трафика" : "Medium"} <span className="text-red-500">*</span>
                       </label>
                       <span className="text-[9px] text-[#64748B] font-mono">utm_medium</span>
                     </div>
                     <input
                       type="text"
-                      placeholder="e.g. cpc, email, banner"
+                      placeholder={t.mediumPlaceholder}
                       required
                       value={utmMedium}
                       onChange={(e) => setUtmMedium(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
+                      className="w-full text-xs px-3 py-2.5 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
 
                   {/* Campaign Name */}
                   <div className="space-y-1.5 font-sans">
-                    <div className="flex justify-between">
-                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
-                        Campaign Name <span className="text-red-500">*</span>
+                    <div className="flex justify-between items-center">
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                        {lang === "he" ? "שם הקמפיין" : lang === "ru" ? "Название" : "Campaign Name"} <span className="text-red-500">*</span>
                       </label>
                       <span className="text-[9px] text-[#64748B] font-mono">utm_campaign</span>
                     </div>
                     <input
                       type="text"
-                      placeholder="e.g. summer_sale_2026"
+                      placeholder={t.campaignPlaceholder}
                       required
                       value={utmCampaign}
                       onChange={(e) => setUtmCampaign(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
+                      className="w-full text-xs px-3 py-2.5 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
 
                   {/* Campaign Term */}
                   <div className="space-y-1.5 font-sans">
-                    <div className="flex justify-between">
-                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
-                        Campaign Term
+                    <div className="flex justify-between items-center">
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                        {lang === "he" ? "מונח קמפיין" : lang === "ru" ? "Ключевое слово" : "Campaign Term"}
                       </label>
                       <span className="text-[9px] text-[#64748B] font-mono">utm_term</span>
                     </div>
                     <input
                       type="text"
-                      placeholder="e.g. running+shoes"
+                      placeholder={t.termPlaceholder}
                       value={utmTerm}
                       onChange={(e) => setUtmTerm(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
+                      className="w-full text-xs px-3 py-2.5 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
 
                   {/* Campaign Content */}
                   <div className="space-y-1.5 font-sans">
-                    <div className="flex justify-between">
-                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
-                        Campaign Content
+                    <div className="flex justify-between items-center">
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                        {lang === "he" ? "תוכן קמפיין" : lang === "ru" ? "Контент" : "Campaign Content"}
                       </label>
                       <span className="text-[9px] text-[#64748B] font-mono">utm_content</span>
                     </div>
                     <input
                       type="text"
-                      placeholder="e.g. banner_cta_red"
+                      placeholder={t.contentPlaceholder}
                       value={utmContent}
                       onChange={(e) => setUtmContent(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
+                      className="w-full text-xs px-3 py-2.5 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
 
                   {/* Campaign ID */}
                   <div className="space-y-1.5 font-sans">
-                    <div className="flex justify-between">
-                      <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
-                        Campaign ID
+                    <div className="flex justify-between items-center">
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                        {lang === "he" ? "מזהה קמפיין" : lang === "ru" ? "ID кампании" : "Campaign ID"}
                       </label>
                       <span className="text-[9px] text-[#64748B] font-mono">utm_id</span>
                     </div>
                     <input
                       type="text"
-                      placeholder="e.g. sales_id_77"
+                      placeholder={t.idPlaceholder}
                       value={utmId}
                       onChange={(e) => setUtmId(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20"
+                      className="w-full text-xs px-3 py-2.5 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
@@ -941,17 +971,17 @@ export default function App() {
                 {/* Custom Extra Parameters Accordion / Fields */}
                 <div className="border-t border-slate-100 pt-5 space-y-3 font-sans">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-xs font-bold text-[#191c1e] uppercase tracking-widest text-[10px]">Custom Parameters</h4>
-                      <p className="text-[10px] text-[#64748B]">Append custom non-standard tags (e.g., gclid, partner_id, fbclid)</p>
+                    <div className={isRtl ? "text-right" : "text-left"}>
+                      <h4 className="text-xs font-bold text-slate-700 uppercase tracking-widest text-[10px]">{t.customParamsTitle}</h4>
+                      <p className="text-[10px] text-[#64748B]">{lang === "he" ? "הוסף פרמטרים מותאמים אישית שאינם UTM רגילים (כגון fbclid, gclid)" : lang === "ru" ? "Добавьте нестандартные теги к ссылке (например, fbclid, gclid)" : "Append custom non-standard tags (e.g., gclid, partner_id, fbclid)"}</p>
                     </div>
                     <button
                       type="button"
                       onClick={handleAddCustomParam}
-                      className="flex items-center gap-1 text-xs text-[#3B82F6] font-bold bg-blue-50/50 hover:bg-blue-50 px-2.5 py-1 rounded-[4px] transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-xs text-blue-600 font-bold bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-[4px] transition-colors cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" />
-                      Add Parameter
+                      {t.addParamBtn}
                     </button>
                   </div>
 
@@ -961,17 +991,17 @@ export default function App() {
                         <div key={param.id} className="flex gap-2.5 items-center animate-fade-in">
                           <input
                             type="text"
-                            placeholder="Key (e.g. gclid)"
+                            placeholder={t.paramKeyPlaceholder}
                             value={param.key}
                             onChange={(e) => handleUpdateCustomParam(param.id, "key", e.target.value)}
-                            className="flex-1 text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-mono"
+                            className="flex-1 text-xs px-3 py-2 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all font-mono placeholder:text-slate-400"
                           />
                           <input
                             type="text"
-                            placeholder="Value (e.g. true)"
+                            placeholder={t.paramValuePlaceholder}
                             value={param.value}
                             onChange={(e) => handleUpdateCustomParam(param.id, "value", e.target.value)}
-                            className="flex-1 text-xs px-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 font-mono"
+                            className="flex-1 text-xs px-3 py-2 border border-slate-300 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-slate-900 rounded-[4px] focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-all font-mono placeholder:text-slate-400"
                           />
                           <button
                             type="button"
@@ -986,7 +1016,7 @@ export default function App() {
                     </div>
                   ) : (
                     <div className="py-5 text-center text-[11px] text-[#64748B] border border-dashed border-[#e2e8f0] rounded-[4px] bg-slate-50/30">
-                      No custom parameters configured yet.
+                      {lang === "he" ? "אין פרמטרים מותאמים אישית מוגדרים." : lang === "ru" ? "Дополнительные параметры пока не настроены." : "No custom parameters configured yet."}
                     </div>
                   )}
                 </div>
@@ -998,17 +1028,19 @@ export default function App() {
               {fullAssembledUrl ? (
                 <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-6 shadow-xs space-y-6 sticky top-[160px]">
                   <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-base font-bold text-[#191c1e] flex items-center gap-2 font-display">
+                    <h3 className={`text-base font-bold text-[#191c1e] flex items-center gap-2 font-display ${isRtl ? "text-right" : "text-left"}`}>
                       <Sparkles className="w-4.5 h-4.5 text-amber-500 fill-amber-50" />
-                      Campaign Destination
+                      {t.assembledTitle}
                     </h3>
-                    <p className="text-xs text-[#64748B] mt-0.5 font-sans">Your tracking link is compiled dynamically below</p>
+                    <p className={`text-xs text-[#64748B] mt-0.5 font-sans ${isRtl ? "text-right" : "text-left"}`}>
+                      {lang === "he" ? "קישור המעקב שלך מיוצר כאן באופן דינמי" : lang === "ru" ? "Ваша ссылка формируется автоматически ниже" : "Your tracking link is compiled dynamically below"}
+                    </p>
                   </div>
 
                   {/* Display Full URL */}
                   <div className="space-y-2 font-sans">
                     <div className="flex items-center justify-between text-[11px] text-[#64748B] font-bold">
-                      <span>CONSTRUCTED UTM URL</span>
+                      <span>{lang === "he" ? "כתובת ה-UTM שנוצרה" : lang === "ru" ? "СФОРМИРОВАННЫЙ URL" : "CONSTRUCTED UTM URL"}</span>
                       <button
                         onClick={handleCopyFullUrl}
                         className="text-[#3B82F6] hover:text-[#3B82F6]/80 flex items-center gap-1 font-bold hover:underline cursor-pointer"
@@ -1016,38 +1048,38 @@ export default function App() {
                         {copiedLink === "full" ? (
                           <>
                             <Check className="w-3.5 h-3.5" />
-                            Copied!
+                            {lang === "he" ? "הועתק!" : lang === "ru" ? "Скопировано!" : "Copied!"}
                           </>
                         ) : (
                           <>
                             <Copy className="w-3.5 h-3.5" />
-                            Copy Link
+                            {lang === "he" ? "העתק קישור" : lang === "ru" ? "Копировать" : "Copy Link"}
                           </>
                         )}
                       </button>
                     </div>
-                    <div className="p-3.5 bg-slate-50 border border-[#e2e8f0] rounded-[4px] text-slate-700 text-xs font-mono break-all leading-relaxed max-h-32 overflow-y-auto shadow-inner">
+                    <div className="p-3.5 bg-slate-50 border border-slate-300 rounded-[4px] text-slate-800 text-xs font-mono break-all leading-relaxed max-h-32 overflow-y-auto shadow-inner">
                       {fullAssembledUrl}
                     </div>
                   </div>
 
                   {/* Shorten Options Grid */}
                   <div className="space-y-3 pt-2 font-sans">
-                    <label className="block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px]">
-                      Select Shortener Service
+                    <label className={`block text-xs font-bold text-[#64748B] uppercase tracking-widest text-[10px] ${isRtl ? "text-right" : "text-left"}`}>
+                      {t.shortenedTitle}
                     </label>
                     
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2" dir="ltr">
                       {/* None */}
                       <div
                         onClick={() => setShortenerService("none")}
                         className={`p-2.5 border rounded-[4px] cursor-pointer text-center flex flex-col items-center justify-center transition-all ${
                           shortenerService === "none"
                             ? "border-[#000000] bg-[#191c1e] text-white font-bold"
-                            : "border-[#e2e8f0] bg-white hover:border-[#3B82F6] text-slate-600"
+                            : "border-slate-300 bg-white hover:border-slate-800 text-slate-600"
                         }`}
                       >
-                        <div className="text-xs font-bold">None</div>
+                        <div className="text-xs font-bold">{lang === "he" ? "ללא" : lang === "ru" ? "Нет" : "None"}</div>
                         <span className="text-[9px] text-[#64748B]">Direct URL</span>
                       </div>
 
@@ -1057,7 +1089,7 @@ export default function App() {
                         className={`p-2.5 border rounded-[4px] cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
                           shortenerService === "bitly"
                             ? "border-orange-500 bg-orange-50 text-orange-950 font-bold"
-                            : "border-[#e2e8f0] bg-white hover:border-[#3B82F6] text-slate-600"
+                            : "border-slate-300 bg-white hover:border-slate-800 text-slate-600"
                         }`}
                       >
                         <div className="text-xs font-bold">Bitly</div>
@@ -1070,7 +1102,7 @@ export default function App() {
                         className={`p-2.5 border rounded-[4px] cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
                           shortenerService === "rebrandly"
                             ? "border-[#3B82F6] bg-blue-50 text-blue-950 font-bold"
-                            : "border-[#e2e8f0] bg-white hover:border-[#3B82F6] text-slate-600"
+                            : "border-slate-300 bg-white hover:border-slate-800 text-slate-600"
                         }`}
                       >
                         <div className="text-xs font-bold">Rebrandly</div>
@@ -1083,7 +1115,7 @@ export default function App() {
                         className={`p-2.5 border rounded-[4px] cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
                           shortenerService === "dub"
                             ? "border-indigo-500 bg-indigo-50 text-indigo-950 font-bold"
-                            : "border-[#e2e8f0] bg-white hover:border-[#3B82F6] text-slate-600"
+                            : "border-slate-300 bg-white hover:border-slate-800 text-slate-600"
                         }`}
                       >
                         <div className="text-xs font-bold">DUB.co</div>
@@ -1096,7 +1128,7 @@ export default function App() {
                         className={`p-2.5 border rounded-[4px] cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 transition-all ${
                           shortenerService === "tinyurl"
                             ? "border-emerald-500 bg-emerald-50 text-emerald-950 font-bold"
-                            : "border-[#e2e8f0] bg-white hover:border-[#3B82F6] text-slate-600"
+                            : "border-slate-300 bg-white hover:border-slate-800 text-slate-600"
                         }`}
                       >
                         <div className="text-xs font-bold">TinyURL</div>
@@ -1108,14 +1140,14 @@ export default function App() {
                   {/* Shortener Submission Trigger Panel */}
                   {shortenerService !== "none" && (
                     <div className="p-4 border border-[#e2e8f0] bg-slate-50/50 rounded-[4px] flex flex-col gap-3 font-sans">
-                      <div className="space-y-1">
+                      <div className={`space-y-1 ${isRtl ? "text-right" : "text-left"}`}>
                         <div className="text-xs font-bold text-[#191c1e]">
-                          Shorten with {shortenerService.toUpperCase()}
+                          {lang === "he" ? "קצר קישור עם" : lang === "ru" ? "Сократить с помощью" : "Shorten with"} {shortenerService.toUpperCase()}
                         </div>
                         <p className="text-[10px] text-[#64748B]">
                           {shortenerService === "tinyurl" && !settings.tinyurlToken
-                            ? "Will execute using the free anonymous TinyURL API."
-                            : `Using credentials configured in settings.`}
+                            ? (lang === "he" ? "יבוצע באמצעות ה-API החינמי והאנונימי של TinyURL." : lang === "ru" ? "Будет выполнено через бесплатный анонимный API TinyURL." : "Will execute using the free anonymous TinyURL API.")
+                            : (lang === "he" ? "משתמש באישורים שהוגדרו בהגדרות." : lang === "ru" ? "Используются учетные данные из настроек." : "Using credentials configured in settings.")}
                         </p>
                       </div>
 
@@ -1128,10 +1160,10 @@ export default function App() {
                         {isShortening ? (
                           <>
                             <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
-                            Shortening...
+                            {t.shorteningBtn}
                           </>
                         ) : (
-                          "Generate Short Link"
+                          t.shortenBtn
                         )}
                       </button>
                     </div>
@@ -1141,10 +1173,10 @@ export default function App() {
                   {shorteningError && (
                     <div className="p-3.5 bg-red-50 border border-red-100 rounded-[4px] text-red-700 text-xs flex gap-2.5 items-start font-sans">
                       <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-bold text-red-800">API Error:</span> {shorteningError}
+                      <div className={isRtl ? "text-right" : "text-left"}>
+                        <span className="font-bold text-red-800">{lang === "he" ? "שגיאת API:" : lang === "ru" ? "Ошибка API:" : "API Error:"}</span> {shorteningError}
                         <div className="text-[10px] text-red-500 mt-1">
-                          Check your API Token in the top right integrations menu.
+                          {lang === "he" ? "בדוק את מפתח ה-API שלך בתפריט האינטגרציות למעלה." : lang === "ru" ? "Проверьте ваш API-токен в верхнем меню интеграций." : "Check your API Token in the top right integrations menu."}
                         </div>
                       </div>
                     </div>
@@ -1154,7 +1186,7 @@ export default function App() {
                   {shortenedUrl && (
                     <div className="space-y-2 p-4 bg-emerald-50/40 border border-emerald-100/60 rounded-[4px] animate-fade-in font-sans">
                       <div className="flex items-center justify-between text-[11px] text-emerald-800 font-bold">
-                        <span>SHORTENED LINK</span>
+                        <span>{lang === "he" ? "קישור מקוצר" : lang === "ru" ? "СОКРАЩЕННАЯ ССЫЛКА" : "SHORTENED LINK"}</span>
                         <button
                           onClick={handleCopyShortUrl}
                           className="text-emerald-700 hover:text-emerald-900 flex items-center gap-1 font-bold hover:underline cursor-pointer"
@@ -1162,17 +1194,17 @@ export default function App() {
                           {copiedLink === "short" ? (
                             <>
                               <Check className="w-3.5 h-3.5" />
-                              Copied!
+                              {lang === "he" ? "הועתק!" : lang === "ru" ? "Скопировано!" : "Copied!"}
                             </>
                           ) : (
                             <>
                               <Copy className="w-3.5 h-3.5" />
-                              Copy
+                              {lang === "he" ? "העתק" : lang === "ru" ? "Копировать" : "Copy"}
                             </>
                           )}
                         </button>
                       </div>
-                      <div className="p-3 bg-white border border-[#e2e8f0] rounded-[4px] text-[#191c1e] font-mono text-xs font-bold flex justify-between items-center">
+                      <div className="p-3 bg-white border border-[#e2e8f0] rounded-[4px] text-[#191c1e] font-mono text-xs font-bold flex justify-between items-center" dir="ltr">
                         <span className="truncate mr-2">{shortenedUrl}</span>
                         <a
                           href={shortenedUrl}
@@ -1192,10 +1224,10 @@ export default function App() {
                     <div className="flex items-center justify-between">
                       <h4 className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest flex items-center gap-1.5 font-sans">
                         <QrCode className="w-3.5 h-3.5 text-slate-400" />
-                        Campaign QR Code
+                        {t.qrCodeBtn}
                       </h4>
                       {shortenedUrl && (
-                        <div className="flex bg-slate-100 p-0.5 rounded-[4px] text-[10px]">
+                        <div className="flex bg-slate-100 p-0.5 rounded-[4px] text-[10px]" dir="ltr">
                           <button
                             type="button"
                             onClick={() => setQrTarget("full")}
@@ -1224,7 +1256,7 @@ export default function App() {
 
                     <div className="flex flex-col sm:flex-row items-center gap-4 bg-slate-50/50 p-3.5 rounded-[4px] border border-[#e2e8f0]">
                       {/* Canvas Container */}
-                      <div className="bg-white p-2 rounded-[4px] shadow-xs border border-[#e2e8f0] shrink-0 animate-fade-in">
+                      <div className="bg-white p-2 rounded-[4px] shadow-xs border border-slate-300 shrink-0 animate-fade-in">
                         <QRCodeCanvas
                           id="qr-code-canvas"
                           value={qrTarget === "short" && shortenedUrl ? shortenedUrl : fullAssembledUrl}
@@ -1236,9 +1268,9 @@ export default function App() {
                         />
                       </div>
 
-                      <div className="space-y-2 flex-1 w-full text-center sm:text-left">
+                      <div className={`space-y-2 flex-1 w-full text-center ${isRtl ? "sm:text-right" : "sm:text-left"}`}>
                         <div className="flex items-center justify-center sm:justify-start gap-1.5">
-                          <span className="text-[10px] text-[#64748B] font-bold">COLOR:</span>
+                          <span className="text-[10px] text-[#64748B] font-bold">{lang === "he" ? "צבע:" : lang === "ru" ? "ЦВЕТ:" : "COLOR:"}</span>
                           {[
                             { hex: "#0F172A", name: "Slate", bg: "bg-slate-900" },
                             { hex: "#2563EB", name: "Blue", bg: "bg-blue-600" },
@@ -1259,7 +1291,7 @@ export default function App() {
                           ))}
                         </div>
 
-                        <div className="text-[10px] text-[#64748B] leading-relaxed font-mono truncate max-w-[180px] sm:max-w-[200px] mx-auto sm:mx-0">
+                        <div className="text-[10px] text-[#64748B] leading-relaxed font-mono truncate max-w-[180px] sm:max-w-[200px] mx-auto sm:mx-0" dir="ltr">
                           Target: <span className="text-slate-600 font-bold">{qrTarget === "short" && shortenedUrl ? shortenedUrl : fullAssembledUrl}</span>
                         </div>
 
@@ -1269,7 +1301,7 @@ export default function App() {
                           className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#3B82F6] hover:text-[#3B82F6]/80 rounded-[4px] text-xs font-bold transition-colors cursor-pointer"
                         >
                           <Download className="w-3.5 h-3.5" />
-                          Download PNG
+                          {lang === "he" ? "הורד PNG" : lang === "ru" ? "Скачать PNG" : "Download PNG"}
                         </button>
                       </div>
                     </div>
@@ -1283,15 +1315,15 @@ export default function App() {
                       className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-[#191c1e] text-white hover:bg-black rounded-[4px] text-xs font-bold transition-colors shadow-xs cursor-pointer"
                     >
                       <FileText className="w-3.5 h-3.5" />
-                      Save to History Log
+                      {t.saveHistoryBtn}
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="bg-slate-100/30 border border-dashed border-[#e2e8f0] rounded-[8px] py-12 px-6 text-center space-y-2 text-[#64748B] sticky top-[160px] font-sans">
                   <Globe className="w-8 h-8 mx-auto text-slate-200" />
-                  <h4 className="font-bold text-xs text-[#191c1e]">Live URL Constructor</h4>
-                  <p className="text-[10px] text-[#64748B] max-w-sm mx-auto">Input your website URL and marketing parameters to compile tracking links and use shorteners here.</p>
+                  <h4 className="font-bold text-xs text-[#191c1e]">{lang === "he" ? "יוצר קישורים בזמן אמת" : lang === "ru" ? "Конструктор ссылок" : "Live URL Constructor"}</h4>
+                  <p className="text-[10px] text-[#64748B] max-w-sm mx-auto">{lang === "he" ? "הזן את כתובת האתר ופרמטרי השיווק כדי לייצר כאן קישורי מעקב וקיצורים." : lang === "ru" ? "Введите URL сайта и параметры маркетинга для создания ссылок." : "Input your website URL and marketing parameters to compile tracking links and use shorteners here."}</p>
                 </div>
               )}
             </div>
@@ -1303,6 +1335,7 @@ export default function App() {
           <BatchCreator
             settings={settings}
             shortenerService={shortenerService}
+            lang={lang}
             onAddHistoryLogs={async (newLogs) => {
               setHistoryLogs([...newLogs, ...historyLogs]);
               if (currentUser) {
@@ -1329,6 +1362,7 @@ export default function App() {
                 onSaveCurrentAsTemplate={handleSaveCurrentAsTemplate}
                 onDeleteCustomTemplate={handleDeleteCustomTemplate}
                 currentActiveId={currentTemplateId}
+                lang={lang}
               />
             </div>
             <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-6 shadow-xs">
@@ -1338,6 +1372,7 @@ export default function App() {
                 onSavePreset={handleSavePreset}
                 onDeletePreset={handleDeletePreset}
                 currentPresetId={currentPresetId}
+                lang={lang}
               />
             </div>
           </div>
@@ -1350,17 +1385,31 @@ export default function App() {
               logs={historyLogs}
               onDeleteLog={handleDeleteLog}
               onClearAll={handleClearAllHistory}
+              lang={lang}
             />
           </div>
         )}
 
       </main>
 
+      {/* Footer */}
+      <footer className="mt-auto py-8 border-t border-[#e2e8f0] bg-white">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-sans">
+          <div className={isRtl ? "text-right" : "text-left"}>
+            &copy; {new Date().getFullYear()} Netolink. {t.allRightsReserved}
+          </div>
+          <div className="flex items-center gap-4 text-[11px] text-slate-400" dir="ltr">
+            <span>UTM Campaign Builder v1.1.0</span>
+          </div>
+        </div>
+      </footer>
+
       {/* Settings Modal (Credentials configuration drawer) */}
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
+        lang={lang}
         onSave={async (newSettings) => {
           setSettings(newSettings);
           if (currentUser) {
@@ -1378,15 +1427,15 @@ export default function App() {
 
       {/* Auth Error Modal */}
       {showAuthErrorModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-fade-in" dir="rtl">
-          <div className="relative w-full max-w-md bg-white rounded-[8px] shadow-xl border border-[#e2e8f0] p-6 flex flex-col gap-4 text-right">
-            <div className="flex items-center gap-3 justify-start border-b border-slate-100 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-fade-in" dir={isRtl ? "rtl" : "ltr"}>
+          <div className={`relative w-full max-w-md bg-white rounded-[8px] shadow-xl border border-[#e2e8f0] p-6 flex flex-col gap-4 ${isRtl ? "text-right" : "text-left"}`}>
+            <div className={`flex items-center gap-3 justify-start border-b border-slate-100 pb-3 ${isRtl ? "flex-row-reverse" : "flex-row"}`}>
               <div className="p-2 bg-amber-50 text-amber-600 rounded-[4px]">
                 <AlertCircle className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-[#191c1e] font-display">התחברות באמצעות גוגל חסומה</h3>
-                <p className="text-[10px] text-slate-400 font-sans">Google Sign-In Blocked in Preview Frame</p>
+                <h3 className="text-sm font-bold text-[#191c1e] font-display">{t.authBlockedTitle}</h3>
+                <p className="text-[10px] text-slate-400 font-sans">{t.authBlockedSubtitle}</p>
               </div>
             </div>
             
@@ -1394,12 +1443,13 @@ export default function App() {
               {authErrorMessage}
             </div>
 
-            <div className="flex justify-end gap-2 mt-2">
+            <div className={`flex gap-2 mt-2 ${isRtl ? "justify-start" : "justify-end"}`}>
               <button
+                type="button"
                 onClick={() => setShowAuthErrorModal(false)}
                 className="px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-[4px] shadow-sm transition-colors cursor-pointer font-sans"
               >
-                הבנתי, תודה
+                {t.authBlockedClose}
               </button>
             </div>
           </div>

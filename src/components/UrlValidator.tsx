@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { CheckCircle2, AlertTriangle, Loader2, RefreshCw, HelpCircle } from "lucide-react";
+import { translations, Language } from "../translations";
 
 interface UrlValidatorProps {
   url: string;
   onValidationChange?: (isValid: boolean) => void;
+  lang?: Language;
 }
 
-export default function UrlValidator({ url, onValidationChange }: UrlValidatorProps) {
+export default function UrlValidator({ url, onValidationChange, lang = "en" }: UrlValidatorProps) {
+  const t = translations[lang];
+  const isRtl = lang === "he";
   const [status, setStatus] = useState<"idle" | "loading" | "valid" | "invalid">("idle");
   const [details, setDetails] = useState<{
     code?: number;
@@ -27,7 +31,7 @@ export default function UrlValidator({ url, onValidationChange }: UrlValidatorPr
       new URL(targetUrl);
     } catch (e) {
       setStatus("invalid");
-      setDetails({ error: "Invalid URL format. Include http:// or https://" });
+      setDetails({ error: t.invalidUrlFormat });
       if (onValidationChange) onValidationChange(false);
       return;
     }
@@ -58,10 +62,10 @@ export default function UrlValidator({ url, onValidationChange }: UrlValidatorPr
       }
     } catch (err: any) {
       setStatus("invalid");
-      setDetails({ error: err.message || "Failed to validate URL due to network error." });
+      setDetails({ error: t.validationNetworkError });
       if (onValidationChange) onValidationChange(false);
     }
-  }, [onValidationChange]);
+  }, [onValidationChange, t.invalidUrlFormat, t.validationNetworkError]);
 
   // Debounce validation on URL changes
   useEffect(() => {
@@ -79,35 +83,39 @@ export default function UrlValidator({ url, onValidationChange }: UrlValidatorPr
   }, [url, validateUrl, onValidationChange]);
 
   return (
-    <div className="flex items-center gap-3 text-xs border border-[#e2e8f0] bg-white p-2.5 rounded-[4px]">
-      <div className="font-semibold text-[#64748B] uppercase tracking-wider text-[10px] font-sans">Real-time Validation:</div>
-      <div className="flex-1 flex items-center gap-2">
+    <div className={`flex items-center gap-3 text-xs border border-[#e2e8f0] bg-white p-2.5 rounded-[4px] ${isRtl ? "flex-row-reverse" : ""}`}>
+      <div className="font-semibold text-[#64748B] uppercase tracking-wider text-[10px] font-sans shrink-0">
+        {t.realTimeValidation}
+      </div>
+      <div className={`flex-1 flex items-center gap-2 ${isRtl ? "flex-row-reverse" : ""}`}>
         {status === "idle" && (
-          <span className="flex items-center gap-1.5 text-[#64748B]">
-            <HelpCircle className="w-4 h-4 text-slate-300" />
-            Enter a destination URL to validate
+          <span className={`flex items-center gap-1.5 text-[#64748B] ${isRtl ? "flex-row-reverse" : ""}`}>
+            <HelpCircle className="w-4 h-4 text-slate-300 shrink-0" />
+            <span className="text-right">{t.enterDestinationToValidate}</span>
           </span>
         )}
 
         {status === "loading" && (
-          <span className="flex items-center gap-1.5 text-[#3B82F6] font-medium">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            Testing destination availability...
+          <span className={`flex items-center gap-1.5 text-[#3B82F6] font-medium ${isRtl ? "flex-row-reverse" : ""}`}>
+            <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+            <span>{t.testingDestination}</span>
           </span>
         )}
 
         {status === "valid" && (
-          <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
-            <CheckCircle2 className="w-4 h-4 fill-emerald-50 text-emerald-600" />
-            Destination is Active {details.code ? `(${details.code} ${details.text || "OK"})` : ""}
+          <span className={`flex items-center gap-1.5 text-emerald-600 font-semibold ${isRtl ? "flex-row-reverse" : ""}`}>
+            <CheckCircle2 className="w-4 h-4 fill-emerald-50 text-emerald-600 shrink-0" />
+            <span>
+              {t.destinationActive} {details.code ? `(${details.code} ${details.text || "OK"})` : ""}
+            </span>
           </span>
         )}
 
         {status === "invalid" && (
-          <span className="flex items-center gap-1.5 text-amber-600 font-semibold break-all">
+          <span className={`flex items-center gap-1.5 text-amber-600 font-semibold break-all ${isRtl ? "flex-row-reverse" : ""}`}>
             <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-            <span>
-              {details.error || `Failed: Code ${details.code} ${details.text || ""}`}
+            <span className={isRtl ? "text-right" : "text-left"}>
+              {details.error || `Failed: Code {details.code} {details.text || ""}`}
             </span>
           </span>
         )}
@@ -117,8 +125,8 @@ export default function UrlValidator({ url, onValidationChange }: UrlValidatorPr
         <button
           type="button"
           onClick={() => validateUrl(url)}
-          className="p-1 hover:bg-slate-100 rounded-[4px] text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-          title="Force Re-validate"
+          className="p-1 hover:bg-slate-100 rounded-[4px] text-slate-400 hover:text-slate-600 transition-colors cursor-pointer shrink-0"
+          title={t.forceRevalidate}
         >
           <RefreshCw className="w-3.5 h-3.5" />
         </button>

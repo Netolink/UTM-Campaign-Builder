@@ -6,9 +6,15 @@ interface HistoryLogTableProps {
   logs: HistoryLog[];
   onDeleteLog: (id: string) => void;
   onClearAll: () => void;
+  lang?: string;
 }
 
-export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: HistoryLogTableProps) {
+export default function HistoryLogTable({
+  logs,
+  onDeleteLog,
+  onClearAll,
+  lang = "en",
+}: HistoryLogTableProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [copyType, setCopyType] = useState<"short" | "full" | null>(null);
@@ -126,7 +132,7 @@ export default function HistoryLogTable({ logs, onDeleteLog, onClearAll }: Histo
           placeholder="Filter campaigns by name, destination, or shortened link..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full text-xs pl-9 pr-3 py-2 border border-[#e2e8f0] bg-white rounded-[4px] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all font-sans"
+          className="w-full text-xs pl-9 pr-3 py-2 border border-slate-300 bg-slate-50/70 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 text-slate-900 rounded-[4px] focus:outline-none transition-all font-sans"
         />
       </div>
 
