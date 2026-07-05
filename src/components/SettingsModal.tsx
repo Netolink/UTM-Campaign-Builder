@@ -21,6 +21,12 @@ export default function SettingsModal({
   const [localSettings, setLocalSettings] = useState<ShortenerSettings>({ ...settings });
   const [isSaved, setIsSaved] = useState(false);
 
+  React.useEffect(() => {
+    if (isOpen) {
+      setLocalSettings({ ...settings });
+    }
+  }, [isOpen, settings]);
+
   if (!isOpen) return null;
 
   const t = translations[lang as Language] || translations.en;

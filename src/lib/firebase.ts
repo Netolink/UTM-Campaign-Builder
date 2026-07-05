@@ -18,6 +18,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { CampaignPreset, UTMTemplate, HistoryLog, ShortenerSettings } from "../types";
+import { encryptSettings, decryptSettings } from "./encryption";
 import localFirebaseConfig from "../../firebase-applet-config.json";
 
 // Construct the configuration, prioritizing environment variables (e.g. in GitHub Actions / production deploy)
@@ -86,7 +87,10 @@ export const getUserData = async (userId: string) => {
     const userDoc = await getDoc(userDocRef);
     let settings: ShortenerSettings | null = null;
     if (userDoc.exists()) {
-      settings = userDoc.data().shortenerSettings || null;
+      const rawSettings = userDoc.data().shortenerSettings || null;
+      if (rawSettings) {
+        settings = decryptSettings(rawSettings, userId);
+      }
     }
 
     // 2. Load Presets
@@ -119,8 +123,9 @@ export const getUserData = async (userId: string) => {
 // Save Shortener Settings
 export const saveUserShortenerSettings = async (userId: string, settings: ShortenerSettings) => {
   try {
+    const encrypted = encryptSettings(settings, userId);
     const userDocRef = doc(db, "users", userId);
-    await setDoc(userDocRef, { shortenerSettings: settings, updatedAt: new Date() }, { merge: true });
+    await setDoc(userDocRef, { shortenerSettings: encrypted, updatedAt: new Date() }, { merge: true });
   } catch (error) {
     console.error("Error saving shortener settings to Firestore:", error);
     throw error;

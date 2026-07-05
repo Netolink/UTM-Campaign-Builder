@@ -52,6 +52,7 @@ import {
 import { translations, Language } from "./translations";
 
 import { shortenUrl } from "./lib/shortener";
+import { encryptSettings, decryptSettings } from "./lib/encryption";
 import SettingsModal from "./components/SettingsModal";
 import TemplateManager from "./components/TemplateManager";
 import PresetSelector from "./components/PresetSelector";
@@ -132,8 +133,21 @@ export default function App() {
       tinyurlDomain: "",
       dubDomain: "",
     };
-    return saved ? { ...defaults, ...JSON.parse(saved) } : defaults;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return decryptSettings({ ...defaults, ...parsed });
+      } catch (e) {
+        return defaults;
+      }
+    }
+    return defaults;
   });
+
+  const settingsRef = React.useRef(settings);
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
 
   // Shortener Control States
   const [shortenerService, setShortenerService] = useState<"none" | "bitly" | "rebrandly" | "tinyurl" | "dub">("none");
@@ -243,17 +257,24 @@ export default function App() {
           if (userData.settings) {
             setSettings(userData.settings);
           } else {
-            // Reset to default settings if none saved on Cloud yet
-            setSettings({
-              bitlyToken: "",
-              rebrandlyKey: "",
-              tinyurlToken: "",
-              dubToken: "",
-              bitlyDomain: "",
-              rebrandlyDomain: "",
-              tinyurlDomain: "",
-              dubDomain: "",
-            });
+            // Check if there are any current settings (from guest/local storage) we should preserve and save to Cloud
+            const currentKeys = settingsRef.current;
+            const hasExistingKeys = Object.values(currentKeys).some(val => val !== "");
+            if (hasExistingKeys) {
+              await saveUserShortenerSettings(user.uid, currentKeys);
+              showTemporaryNotification("Synced local API credentials to your cloud account securely!");
+            } else {
+              setSettings({
+                bitlyToken: "",
+                rebrandlyKey: "",
+                tinyurlToken: "",
+                dubToken: "",
+                bitlyDomain: "",
+                rebrandlyDomain: "",
+                tinyurlDomain: "",
+                dubDomain: "",
+              });
+            }
           }
         } catch (error) {
           console.error("Error loading user data from cloud:", error);
@@ -282,7 +303,16 @@ export default function App() {
           tinyurlDomain: "",
           dubDomain: "",
         };
-        setSettings(savedSettings ? { ...defaults, ...JSON.parse(savedSettings) } : defaults);
+        if (savedSettings) {
+          try {
+            const parsed = JSON.parse(savedSettings);
+            setSettings(decryptSettings({ ...defaults, ...parsed }));
+          } catch (e) {
+            setSettings(defaults);
+          }
+        } else {
+          setSettings(defaults);
+        }
       }
       setIsAuthLoading(false);
     });
@@ -374,7 +404,8 @@ export default function App() {
 
   useEffect(() => {
     if (!currentUser) {
-      localStorage.setItem("utm_shortener_settings", JSON.stringify(settings));
+      const encrypted = encryptSettings(settings);
+      localStorage.setItem("utm_shortener_settings", JSON.stringify(encrypted));
     }
   }, [settings, currentUser]);
 
