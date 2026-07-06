@@ -9,6 +9,7 @@ interface SettingsModalProps {
   settings: ShortenerSettings;
   onSave: (settings: ShortenerSettings) => void;
   lang?: string;
+  isLoggedIn?: boolean;
 }
 
 export default function SettingsModal({
@@ -17,6 +18,7 @@ export default function SettingsModal({
   settings,
   onSave,
   lang = "en",
+  isLoggedIn = false,
 }: SettingsModalProps) {
   const [localSettings, setLocalSettings] = useState<ShortenerSettings>({ ...settings });
   const [isSaved, setIsSaved] = useState(false);
@@ -70,7 +72,7 @@ export default function SettingsModal({
           <div className={`bg-amber-50/40 border border-amber-100 rounded-[8px] p-3.5 flex gap-3 text-xs text-amber-800 ${isRtl ? "flex-row-reverse text-right" : "text-left"}`}>
             <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div className="font-sans">
-              <span className="font-bold">{t.securityPolicyTitle}</span> {t.securityPolicyDesc}
+              <span className="font-bold">{t.securityPolicyTitle}</span> {isLoggedIn ? t.securityPolicyDescLogged : t.securityPolicyDesc}
             </div>
           </div>
 

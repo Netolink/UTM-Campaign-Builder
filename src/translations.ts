@@ -127,6 +127,7 @@ export interface TranslationDict {
   apiSettingsSubtitle: string;
   securityPolicyTitle: string;
   securityPolicyDesc: string;
+  securityPolicyDescLogged: string;
   bitlyTitle: string;
   rebrandlyTitle: string;
   dubTitle: string;
@@ -343,6 +344,7 @@ export const translations: Record<Language, TranslationDict> = {
     apiSettingsSubtitle: "Configure link shorteners with your own API credentials",
     securityPolicyTitle: "Security Policy:",
     securityPolicyDesc: "Credentials entered here are saved 100% locally in your own browser's localStorage. They never touch third-party databases and are proxied securely to prevent client-side credential leaking.",
+    securityPolicyDescLogged: "Because you are signed in, your API credentials are saved securely in your personal Cloud account (Firestore) and synced across your devices. They are proxied securely on the server to prevent client-side leaks.",
     bitlyTitle: "Bitly Configuration",
     rebrandlyTitle: "Rebrandly Configuration",
     dubTitle: "DUB.co Configuration",
@@ -557,6 +559,7 @@ export const translations: Record<Language, TranslationDict> = {
     apiSettingsSubtitle: "הגדר מקצרי קישורים באמצעות אישורי API משלך",
     securityPolicyTitle: "מדיניות אבטחה:",
     securityPolicyDesc: "האישורים המוזנים כאן נשמרים ב-100% באופן מקומי בדפדפן שלך ב-localStorage. הם אינם מגיעים למסדי נתונים של צד שלישי ומעוברים דרך פרוקסי מאובטח למניעת דליפת אישורים לקוח.",
+    securityPolicyDescLogged: "מכיוון שאתה מחובר לחשבונך, אישורי ה-API שלך נשמרים בצורה מאובטחת בחשבון הענן האישי שלך (Firestore) כדי להסתנכרן בין המכשירים שלך. הם מעוברים דרך פרוקסי שרת מאובטח למניעת דליפת אישורים.",
     bitlyTitle: "הגדרת Bitly",
     rebrandlyTitle: "הגדרת Rebrandly",
     dubTitle: "הגדרת DUB.co",
@@ -771,6 +774,7 @@ export const translations: Record<Language, TranslationDict> = {
     apiSettingsSubtitle: "Настройте сокращатели ссылок с помощью ваших собственных ключей API",
     securityPolicyTitle: "Политика безопасности:",
     securityPolicyDesc: "Введенные учетные данные сохраняются на 100% локально в вашем браузере (localStorage). Они не передаются сторонним базам данных и безопасно проксируются для предотвращения утечки.",
+    securityPolicyDescLogged: "Поскольку вы вошли в систему, ваши учетные данные API надежно сохраняются в вашем личном облачном аккаунте (Firestore) для синхронизации между устройствами. Они безопасно проксируются для предотвращения утечки.",
     bitlyTitle: "Настройка Bitly",
     rebrandlyTitle: "Настройка Rebrandly",
     dubTitle: "Настройка DUB.co",

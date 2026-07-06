@@ -1820,6 +1820,7 @@ export default function App() {
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
         lang={lang}
+        isLoggedIn={!!currentUser}
         onSave={async (newSettings) => {
           setSettings(newSettings);
           if (currentUser) {
