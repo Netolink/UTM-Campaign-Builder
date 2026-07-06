@@ -276,9 +276,9 @@ export default function App() {
               });
             }
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error("Error loading user data from cloud:", error);
-          showTemporaryNotification("Error loading saved data from Cloud database.");
+          showTemporaryNotification(`Error loading saved data from Cloud database: ${error?.message || error}`);
         }
       } else {
         setCurrentUser(null);
