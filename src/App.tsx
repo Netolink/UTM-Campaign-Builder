@@ -20,6 +20,8 @@ import {
   Layers,
   LogIn,
   LogOut,
+  Apple,
+  Play,
 } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { onAuthStateChanged } from "firebase/auth";
@@ -1078,8 +1080,30 @@ export default function App() {
               <div className="bg-white border border-[#e2e8f0] rounded-[8px] p-6 shadow-xs space-y-6">
                 <div className="border-b border-slate-100 pb-4">
                   <h2 className={`text-base font-bold text-[#191c1e] flex items-center gap-2 font-display ${isRtl ? "text-right" : "text-left"}`}>
-                    <Globe className="w-4.5 h-4.5 text-slate-500" />
-                    {destinationType === "playstore" ? (lang === "he" ? "1. פרטי אפליקציה ב-Google Play" : "1. Google Play App Details") : destinationType === "appstore" ? (lang === "he" ? "1. פרטי אפליקציה ב-App Store" : "1. App Store App Details") : t.urlTitle}
+                    {destinationType === "playstore" ? (
+                      <svg className="w-4.5 h-4.5 text-emerald-600 fill-current shrink-0" viewBox="0 0 24 24">
+                        <path d="M3,5.27V18.73L16.55,12L3,5.27M17,12L21,14.25V9.75L17,12Z" />
+                      </svg>
+                    ) : destinationType === "appstore" ? (
+                      <svg className="w-4.5 h-4.5 text-slate-800 fill-current shrink-0" viewBox="0 0 24 24">
+                        <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.1,16.67C20.08,16.74 19.67,18.11 18.71,19.5M15.97,4.17C16.63,3.37 17.07,2.28 16.95,1C16,1.04 14.9,1.6 14.24,2.38C13.68,3.04 13.19,4.14 13.34,5.39C14.39,5.47 15.4,4.88 15.97,4.17Z" />
+                      </svg>
+                    ) : (
+                      <Globe className="w-4.5 h-4.5 text-slate-500 shrink-0" />
+                    )}
+                    {destinationType === "playstore" ? (
+                      lang === "he" 
+                        ? "פרטי אפליקציה ב-Google Play" 
+                        : lang === "ru"
+                        ? "Информация о приложении Google Play"
+                        : "Google Play App Details"
+                    ) : destinationType === "appstore" ? (
+                      lang === "he" 
+                        ? "פרטי אפליקציה ב-App Store" 
+                        : lang === "ru"
+                        ? "Информация о приложении App Store"
+                        : "App Store App Details"
+                    ) : t.urlTitle}
                   </h2>
                 </div>
 

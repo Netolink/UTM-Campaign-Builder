@@ -233,7 +233,7 @@ export const translations: Record<Language, TranslationDict> = {
     resetForm: "Reset Form",
     
     // Creator Form
-    urlTitle: "1. Website Details",
+    urlTitle: "Website Details",
     urlLabel: "Website URL *",
     urlPlaceholder: "e.g., https://example.com/landing-page",
     urlHelp: "The full web address of your campaign page (HTTP/HTTPS supported)",
@@ -448,7 +448,7 @@ export const translations: Record<Language, TranslationDict> = {
     resetForm: "איפוס טופס",
     
     // Creator Form
-    urlTitle: "1. פרטי אתר האינטרנט",
+    urlTitle: "פרטי אתר האינטרנט",
     urlLabel: "כתובת אתר (Website URL) *",
     urlPlaceholder: "לדוגמה: https://example.com/landing-page",
     urlHelp: "כתובת האינטרנט המלאה של דף הקמפיין שלך (נתמך ב-HTTP/HTTPS)",
@@ -663,7 +663,7 @@ export const translations: Record<Language, TranslationDict> = {
     resetForm: "Сбросить форму",
     
     // Creator Form
-    urlTitle: "1. Информация о веб-сайте",
+    urlTitle: "Информация о веб-сайте",
     urlLabel: "URL-адрес сайта (Website URL) *",
     urlPlaceholder: "например, https://example.com/landing-page",
     urlHelp: "Полный веб-адрес целевой страницы вашей кампании (поддерживается HTTP/HTTPS)",
